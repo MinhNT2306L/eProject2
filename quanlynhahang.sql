@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `quanly_nhahang` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `quanly_nhahang`;
 -- MySQL dump 10.13  Distrib 8.0.44, for macos15 (arm64)
 --
 -- Host: 127.0.0.1    Database: quanly_nhahang
@@ -21,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '0c0c59ac-b341-11f0-8b05-71f05d04fada:1-12';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '0c0c59ac-b341-11f0-8b05-71f05d04fada:1-14';
 
 --
 -- Table structure for table `ban`
@@ -93,7 +95,6 @@ CREATE TABLE `khachhang` (
   `ten_kh` varchar(100) NOT NULL,
   `sdt` varchar(20) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `dia_chi` varchar(255) DEFAULT NULL,
   `ngay_tao` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`kh_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -259,6 +260,10 @@ LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'quanly_nhahang'
+--
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -270,4 +275,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-27 23:41:38
+-- Dump completed on 2025-10-28  1:01:17
