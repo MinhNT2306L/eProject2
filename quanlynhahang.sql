@@ -26,7 +26,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '0c0c59ac-b341-11f0-8b05-71f05d04fada:1-14';
 
 --
--- Table structure for table `ban`
+-- Table structure for table `ban`-
 --
 
 DROP TABLE IF EXISTS `ban`;
