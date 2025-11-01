@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.restaurant_management.Controller.TableController"
+            prefWidth="900" prefHeight="600"
+            style="-fx-background-color: linear-gradient(to bottom right, #f8f9fa, #e9ecef);">
+    <children>
+
+        <!-- Tiêu đề -->
+        <Label text="Danh Sách Bàn Ăn"
+               AnchorPane.topAnchor="30"
+               AnchorPane.leftAnchor="50"
+               style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #343a40;"/>
+
+        <!-- Card chính -->
+        <VBox spacing="20"
+              AnchorPane.topAnchor="100"
+              AnchorPane.leftAnchor="50"
+              AnchorPane.rightAnchor="50"
+              AnchorPane.bottomAnchor="50"
+              style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-padding: 30;">
+
+            <TableView fx:id="tableList" style="-fx-background-radius: 8; -fx-border-color: #dee2e6; -fx-border-radius: 8;">
+                <columns>
+                    <TableColumn fx:id="colId" text="Mã Bàn" prefWidth="120"/>
+                    <TableColumn fx:id="colName" text="Tên Bàn" prefWidth="300"/>
+                    <TableColumn fx:id="colStatus" text="Trạng Thái" prefWidth="200"/>
+                </columns>
+            </TableView>
+
+            <!-- Thanh nút -->
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="🔄 Làm mới" onAction="#refreshTables"
+                        style="-fx-background-color: #51cf66; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                <Button text="⬅ Quay lại" onAction="#backToLogin"
+                        style="-fx-background-color: #339af0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
+            </HBox>
+
+        </VBox>
+
+    </children>
+</AnchorPane>

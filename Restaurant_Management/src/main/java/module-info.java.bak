@@ -11,4 +11,5 @@ module com.example.restaurant_management {
     opens com.example.restaurant_management.Controller to javafx.fxml;
 
     exports com.example.restaurant_management;
+    exports com.example.restaurant_management.Controller;
 }

@@ -3,6 +3,7 @@ package com.example.restaurant_management.Controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,11 +12,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class LoginController {
+
     @FXML
     private Label errorLabel;
+
     @FXML
     private TextField usernameField;
 
@@ -26,22 +27,33 @@ public class LoginController {
     private Button loginButton;
 
     @FXML
-    public void login(ActionEvent event){
-        String userName = usernameField.getText();
-        String pw = passwordField.getText();
-        if (true){ //TODO: If login is true
+    public void login(ActionEvent event) {
+        String username = usernameField.getText();
+        String password = passwordField.getText();
+
+        // fix
+        if (true) {
             try {
-                Parent root = FXMLLoader.load(getClass().getResource("/com/example/restaurant_management/menu-view.fxml"));
-                Scene newScene = new Scene(root);
-                Stage currentStage = (Stage) loginButton.getScene().getWindow();
-                currentStage.setScene(newScene);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/com/example/restaurant_management/View/TableView.fxml")
+                );
+
+                Parent root = loader.load();
+                Scene scene = new Scene(root);
+
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(scene);
+                stage.setTitle("LOCAL FOOD - Đặt bàn");
+                stage.show();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                errorLabel.setVisible(true);
+                errorLabel.setText("Không thể mở giao diện đặt bàn.");
             }
-        }else {
+        } else {
             errorLabel.setVisible(true);
-            errorLabel.setText("Kiểm tra lại thông tin đăng nhập");
+            errorLabel.setText("Sai thông tin đăng nhập, vui lòng thử lại.");
         }
     }
-
 }

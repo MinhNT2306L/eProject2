@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.restaurant_management.Controller.MainController">
+    <children>
+        <VBox alignment="CENTER" spacing="20" AnchorPane.topAnchor="100" AnchorPane.leftAnchor="250">
+            <Label text="Quản Lý Nhà Hàng" style="-fx-font-size: 24px;"/>
+            <Button text="Vào danh sách bàn" onAction="#openTableView"/>
+        </VBox>
+    </children>
+</AnchorPane>

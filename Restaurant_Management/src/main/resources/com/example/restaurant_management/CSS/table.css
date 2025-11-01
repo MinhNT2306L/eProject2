@@ -1,0 +1,40 @@
+.button:hover {
+    -fx-opacity: 0.85;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-transition: 0.2s;
+}
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #f1f3f5;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-border-color: #dee2e6;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #a5d8ff;
+}
+.button {
+    -fx-font-size: 14px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 2);
+}
+
+.button:hover {
+    -fx-opacity: 0.85;
+}
+
+#tableList {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
