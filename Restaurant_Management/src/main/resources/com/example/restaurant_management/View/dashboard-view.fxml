@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@CSS/order.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.restaurant_management.Controller.DashBoardController">
+
+    <!-- Sidebar -->
+    <left>
+        <VBox spacing="15" styleClass="sidebar">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="20" />
+            </padding>
+            <children>
+
+                <!-- Logo Section -->
+                <HBox alignment="CENTER" styleClass="logo-section">
+                    <padding>
+                        <Insets bottom="20" top="10" />
+                    </padding>
+                    <children>
+                        <ImageView fitHeight="120" fitWidth="220" preserveRatio="true">
+                            <image>
+                                <Image url="@image/logo-2.png" />
+                            </image>
+                        </ImageView>
+                    </children>
+                </HBox>
+
+                <!-- Menu Buttons -->
+                <Button fx:id="tableBtn" prefHeight="42.0" prefWidth="241.0" styleClass="menu-button" text="Sơ đồ bàn" />
+
+                <!-- Spacer to push logout button down -->
+                <VBox prefHeight="399.0" prefWidth="242.0" VBox.vgrow="ALWAYS" />
+
+                <!-- Logout Button -->
+                <Button fx:id="logoutBtn" styleClass="logout-button" text="Đăng xuất" />
+            </children>
+        </VBox>
+    </left>
+
+    <!-- Main Content -->
+    <center>
+        <StackPane fx:id="contentArea" prefHeight="700.0" prefWidth="993.0" style="-fx-padding: 20;">
+
+            <!-- Sơ đồ bàn -->
+            <VBox fx:id="tableView" spacing="20" styleClass="content-view" visible="true">
+                <padding>
+                    <Insets bottom="20" left="30" right="30" top="30" />
+                </padding>
+                <children>
+                    <Label styleClass="page-title" text="Danh sách bàn" />
+                    <FlowPane fx:id="tableContainer" hgap="15" styleClass="table-grid" vgap="15" />
+                </children>
+            </VBox>
+
+            <!-- Menu đồ ăn-->
+
+        </StackPane>
+    </center>
+</BorderPane>

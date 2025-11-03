@@ -1,0 +1,166 @@
+/* ============================
+   GLOBAL STYLES
+============================ */
+.root {
+    -fx-background-color: #F5F5F5;
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+/* ============================
+   SIDEBAR
+============================ */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #2C3E50, #34495E);
+    -fx-padding: 0;
+}
+
+.logo-section {
+    -fx-background-color: rgba(0, 0, 0, 0.15);
+    -fx-alignment: center;
+    -fx-padding: 20 0 15 0;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 0 0 1 0;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ECF0F1;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-padding: 12 15 12 25;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-text-fill: #FF914D;
+}
+
+.menu-button:focused,
+.menu-button:pressed {
+    -fx-background-color: #FF914D;
+    -fx-text-fill: white;
+}
+
+.logout-button {
+    -fx-background-color: rgba(231, 76, 60, 0.9);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 15 12 15;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+.logout-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* ============================
+   CONTENT AREA
+============================ */
+.content-view {
+    -fx-background-color: #F5F5F5;
+    -fx-padding: 30 30 20 30;
+}
+
+.page-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+    -fx-padding: 10 0 10 0;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495E;
+}
+
+/* ============================
+   TABLE GRID
+============================ */
+.table-grid {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+}
+
+.table-button {
+    -fx-pref-width: 120;
+    -fx-pref-height: 100;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+}
+
+.table-empty { -fx-background-color: #27AE60; }
+.table-serving { -fx-background-color: #E67E22; }
+.table-paying { -fx-background-color: #C0392B; }
+
+.table-button:hover {
+    -fx-opacity: 0.8;
+}
+
+/* ============================
+   BUTTONS
+============================ */
+.action-button,
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #FF914D, #FF5E62);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.action-button:hover,
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to right, #FF5E62, #FF914D);
+}
+
+.add-button {
+    -fx-background-color: #27AE60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 6;
+}
+.add-button:hover {
+    -fx-background-color: #229954;
+}
+
+/* ============================
+   PAYMENT SECTION
+============================ */
+.total-amount {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E7D32;
+}
+
+#btnCash {
+    -fx-background-color: #43A047;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+}
+#btnCash:hover { -fx-background-color: #2E7D32; }
+
+#btnQR {
+    -fx-background-color: #0288D1;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+}
+#btnQR:hover { -fx-background-color: #0277BD; }
+
+#btnCard {
+    -fx-background-color: #6A1B9A;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+}
+#btnCard:hover { -fx-background-color: #4A148C; }

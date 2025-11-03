@@ -1,0 +1,193 @@
+.root {
+    -fx-background-color: #F5F5F5;
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #2C3E50, #34495E);
+    -fx-padding: 0;
+}
+
+.logo-section {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-items {
+    -fx-padding: 15 10 15 10;
+    -fx-spacing: 8;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ECF0F1;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-padding: 12 15 12 20;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-text-fill: #FF914D;
+}
+
+.menu-button:focused,
+.menu-button:pressed {
+    -fx-background-color: #FF914D;
+    -fx-text-fill: white;
+}
+
+.logout-button {
+    -fx-background-color: rgba(231, 76, 60, 0.8);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 15 12 15;
+    -fx-cursor: hand;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.logout-button:hover {
+    -fx-background-color: rgba(231, 76, 60, 1.0);
+}
+
+/* Content Area Styles */
+.dashboard-view,
+.content-view {
+    -fx-background-color: #F5F5F5;
+}
+
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495E;
+}
+
+.info-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #7F8C8D;
+}
+
+/* Statistics Cards */
+.stats-container {
+    -fx-padding: 0 0 0 0;
+}
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20 25 20 25;
+    -fx-pref-width: 200;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-alignment: center;
+}
+
+.stat-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7F8C8D;
+    -fx-font-weight: normal;
+}
+
+.stat-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+}
+
+.stat-value.available {
+    -fx-text-fill: #27AE60;
+}
+
+.stat-value.serving {
+    -fx-text-fill: #E67E22;
+}
+
+.stat-value.orders {
+    -fx-text-fill: #3498DB;
+}
+
+/* Action Buttons */
+.action-button {
+    -fx-background-color: linear-gradient(to right, #FF914D, #FF5E62);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 20 12 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+.action-button:hover {
+    -fx-background-color: linear-gradient(to right, #FF5E62, #FF914D);
+    -fx-effect: dropshadow(gaussian, rgba(255,145,77,0.4), 12, 0, 0, 3);
+}
+
+.add-button {
+    -fx-background-color: #27AE60;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15 8 15;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.add-button:hover {
+    -fx-background-color: #229954;
+}
+
+/* Table Grid Container */
+.table-grid-container {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+/* Order List Container */
+.order-list-container {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+/* Dish List Container */
+.dish-list-container {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+/* Customer List Container */
+.customer-list-container {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+/* Orders Container */
+.orders-container {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-max-height: 300;
+}
+
