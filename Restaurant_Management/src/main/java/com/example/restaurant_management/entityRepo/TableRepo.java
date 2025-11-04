@@ -29,6 +29,16 @@ public class TableRepo extends EntityRepo<Table> {
             throw new RuntimeException(e);
         }
     }
+    // Trong TableRepo (BanRepo)
+    public void updateTableStatus(Connection conn, int banId, String trangThai) throws SQLException {
+        // Lưu ý: Trang thái bàn phải khớp với ENUM trong DB: 'TRONG','DAT_TRUOC','PHUC_VU'
+        String sql = "UPDATE ban SET trang_thai = ? WHERE ban_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, trangThai);
+            ps.setInt(2, banId);
+            ps.executeUpdate();
+        }
+    }
 
 
 }

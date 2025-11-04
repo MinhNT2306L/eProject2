@@ -9,25 +9,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FoodRepo extends EntityRepo<Food>{
+public class FoodRepo extends EntityRepo<Food> {
 
-    public FoodRepo(RowMapper<Food> mapper, String tableName) {
-        super(mapper, tableName);
+    public FoodRepo(RowMapper<Food> mapper) {
+        super(mapper, "monan");
     }
 
-    public List<Food> findFood(String category){
-        try{
-            List<Food> foodList = new ArrayList<>();
-            String sql = "SELECT * FROM " + this.getTableName() + " WHERE `loai_mon` = " + category;
-            PreparedStatement stmt = this.getConn().prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()){
+    public List<Food> findAllFoods() {
+        List<Food> foodList = new ArrayList<>();
+        String sql = "SELECT * FROM monan";
+        try (PreparedStatement stmt = this.getConn().prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
                 foodList.add(this.getMapper().mapRow(rs));
             }
-            return foodList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return foodList;
     }
-
 }

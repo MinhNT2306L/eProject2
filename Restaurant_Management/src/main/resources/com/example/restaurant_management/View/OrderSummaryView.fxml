@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/24"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.restaurant_management.Controller.OrderSummaryController"
+            prefWidth="950" prefHeight="650"> <top>
+    <VBox fx:id="topVBox" alignment="CENTER">
+        <Label fx:id="lblTableInfo" text="Thông tin bàn"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10;"/>
+        <Label text="THỰC ĐƠN NHÀ HÀNG"
+               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 5; -fx-alignment: center;" />
+    </VBox>
+</top>
+
+    <center>
+        <ScrollPane fitToWidth="true" prefHeight="500">
+            <FlowPane fx:id="menuContainer" hgap="20" vgap="20" style="-fx-background-color: #ffffff;">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+            </FlowPane>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="20">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <Label text="Tổng tiền:" style="-fx-font-size: 18px;"/>
+            <Label fx:id="lblTotalPrice" text="0 VND" style="-fx-font-size: 18px; -fx-text-fill: #009688; -fx-font-weight: bold;"/>
+            <Button text="Thanh toán" fx:id="btnPay"
+                    style="-fx-background-color: #009688; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-weight: bold;"/>
+        </HBox>
+    </bottom>
+
+    <right>
+        <VBox prefWidth="300" spacing="10" style="-fx-background-color: #f4f4f4; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 0 1;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="HÓA ĐƠN TẠM"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-alignment: center; -fx-text-fill: #009688;"
+                   maxWidth="Infinity" alignment="CENTER"/>
+
+            <Separator />
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                <VBox fx:id="orderDetailsContainer" spacing="8" style="-fx-background-color: #f4f4f4;">
+                    <padding>
+                        <Insets top="5" right="5" bottom="5" left="5"/>
+                    </padding>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </right>
+
+</BorderPane>

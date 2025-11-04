@@ -1,7 +1,5 @@
 package com.example.restaurant_management.mapper;
-
 import com.example.restaurant_management.entity.Food;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

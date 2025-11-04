@@ -51,7 +51,6 @@ public class MenuController {
         Parent root = loader.load();
 
         OrderSummaryController controller = loader.getController();
-        controller.setOrderList(orderList);
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setTitle("Hóa đơn tạm");

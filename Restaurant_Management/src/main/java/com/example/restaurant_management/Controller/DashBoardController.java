@@ -4,7 +4,7 @@ import com.example.restaurant_management.entity.Table;
 import com.example.restaurant_management.entityRepo.TableRepo;
 import com.example.restaurant_management.mapper.TableMapper;
 import com.example.restaurant_management.service.LoginService;
-import com.example.restaurant_management.service.TableSevice;
+import com.example.restaurant_management.service.TableService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -22,7 +22,7 @@ public class DashBoardController {
     @FXML
     public void initialize(){
         List<Table> tables = tableRepo.getAll();
-        TableSevice.updateTableList(tableContainer,tables);
+        TableService.updateTableList(tableContainer,tables);
     }
 
 

@@ -6,10 +6,15 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-
+import com.example.restaurant_management.Controller.OrderSummaryController;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import java.io.IOException;
 import java.util.List;
 
-public class TableSevice {
+public class TableService {
     public static void updateTableList(FlowPane tableList, List<Table> tables) {
         // Xóa nội dung cũ trước khi cập nhật
         tableList.getChildren().clear();
@@ -62,6 +67,29 @@ public class TableSevice {
 
             // Gắn sự kiện click chọn bàn
            // TODO: xử lý mở giao diện order cho bàn này
+            card.setOnMouseClicked(e -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader(
+                            TableService.class.getResource("/com/example/restaurant_management/View/OrderSummaryView.fxml")
+                    );
+                    Parent root = loader.load();
+
+                    // Lấy controller
+                    OrderSummaryController controller = loader.getController();
+
+                    // Truyền dữ liệu bàn vào controller
+                    controller.setTableInfo(table);
+
+                    // Tạo stage mới để hiển thị giao diện Order
+                    Stage stage = new Stage();
+                    stage.setTitle("Order - Bàn " + table.getTableNumber());
+                    stage.setScene(new Scene(root));
+                    stage.show();
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
 
 
             // Thêm card vào FlowPane
