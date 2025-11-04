@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@CSS/order.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.restaurant_management.Controller.DashBoardController">
+<BorderPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@../CSS/order.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.restaurant_management.Controller.DashBoardController">
 
     <!-- Sidebar -->
     <left>
@@ -29,7 +29,7 @@
                     <children>
                         <ImageView fitHeight="120" fitWidth="220" preserveRatio="true">
                             <image>
-                                <Image url="@image/logo-2.png" />
+                                <Image url="@../image/logo-2.png" />
                             </image>
                         </ImageView>
                     </children>
@@ -42,7 +42,7 @@
                 <VBox prefHeight="399.0" prefWidth="242.0" VBox.vgrow="ALWAYS" />
 
                 <!-- Logout Button -->
-                <Button fx:id="logoutBtn" styleClass="logout-button" text="Đăng xuất" />
+                <Button fx:id="logoutBtn" onAction="#logout" styleClass="logout-button" text="Đăng xuất" />
             </children>
         </VBox>
     </left>

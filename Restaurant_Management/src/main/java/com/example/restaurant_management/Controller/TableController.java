@@ -72,7 +72,7 @@ public class TableController {
 
     @FXML
     private void backToLogin(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/com/example/restaurant_management/login-view.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/com/example/restaurant_management/View/login-view.fxml"));
         Stage stage = (Stage) tableList.getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.setTitle("LOCAL FOOD - Đăng nhập");

@@ -14,24 +14,13 @@ public class ConnectDB {
 
     private ConnectDB() {}
 
-    public static Connection getInstance() {
+    public static Connection getConnection() {
+
         try {
-            if (connection == null || connection.isClosed()) {
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            }
+            return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            System.err.println("Lỗi khi kết nối CSDL: " + e.getMessage());
+            throw new RuntimeException(e);
         }
-        return connection;
     }
 
-    public static void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi đóng kết nối: " + e.getMessage());
-        }
-    }
 }

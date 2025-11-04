@@ -19,7 +19,7 @@ public class TableSevice {
             VBox card = new VBox();
             card.setAlignment(Pos.CENTER);
             card.setSpacing(5);
-            card.setPrefSize(120, 100);
+            card.setPrefHeight(100);
             card.setStyle("-fx-background-color: white; -fx-background-radius: 10; "
                     + "-fx-padding: 10; -fx-cursor: hand; "
                     + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);");
@@ -56,7 +56,7 @@ public class TableSevice {
 
             Platform.runLater(()->{
                 card.prefWidthProperty().bind(
-                        tableList.widthProperty().subtract(50).divide(3)
+                        tableList.widthProperty().subtract(80).divide(3)
                 );
             });
 
