@@ -189,3 +189,80 @@ INSERT INTO `order_chitiet` (`order_id`, `mon_id`, `so_luong`, `don_gia`) VALUES
 (1, 3, 1, 20000),
 (2, 2, 1, 20000),
 (2, 3, 1, 15000);
+
+-- ===============================
+-- Bảng invoices
+-- ===============================
+DROP TABLE IF EXISTS `invoice_payments`;
+DROP TABLE IF EXISTS `payments`;
+DROP TABLE IF EXISTS `invoices`;
+
+CREATE TABLE `invoices` (
+    `invoice_id` int NOT NULL AUTO_INCREMENT,
+    `order_id` int NOT NULL,
+    `so_hoa_don` varchar(50) NOT NULL,
+    `tong_tien` decimal(12,2) NOT NULL DEFAULT '0.00',
+    `thue` decimal(12,2) NOT NULL DEFAULT '0.00',
+    `giam_gia` decimal(12,2) NOT NULL DEFAULT '0.00',
+    `phai_thu` decimal(12,2) NOT NULL DEFAULT '0.00',
+    `xuat_luc` datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`invoice_id`),
+    UNIQUE KEY `so_hoa_don` (`so_hoa_don`),
+    UNIQUE KEY `order_id` (`order_id`),
+    CONSTRAINT `invoices_chk_1` CHECK ((`tong_tien` >= 0)),
+    CONSTRAINT `invoices_chk_2` CHECK ((`thue` >= 0)),
+    CONSTRAINT `invoices_chk_3` CHECK ((`giam_gia` >= 0)),
+    CONSTRAINT `invoices_chk_4` CHECK ((`phai_thu` >= 0)),
+    CONSTRAINT `invoices_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `invoices` (`order_id`, `so_hoa_don`, `tong_tien`, `thue`, `giam_gia`, `phai_thu`, `xuat_luc`) VALUES
+(1, 'INV-20251028-001', 70000, 7000, 0, 77000, '2025-10-28 12:05:00'),
+(2, 'INV-20251028-002', 35000, 3500, 5000, 33500, '2025-10-28 12:40:00');
+
+-- ===============================
+-- Bảng payments
+-- ===============================
+CREATE TABLE `payments` (
+    `payment_id` int NOT NULL AUTO_INCREMENT,
+    `order_id` int NOT NULL,
+    `so_tien` decimal(12,2) NOT NULL DEFAULT '0.00',
+    `phuong_thuc` enum('TIEN_MAT','THE','CHUYEN_KHOAN','VI_DIEN_TU') NOT NULL,
+    `trang_thai` enum('CHO_XU_LY','HOAN_TAT','THAT_BAI') DEFAULT 'CHO_XU_LY',
+    `thanh_toan_luc` datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`payment_id`),
+    KEY `order_id` (`order_id`),
+    CONSTRAINT `payments_chk_1` CHECK ((`so_tien` >= 0)),
+    CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `payments` (`order_id`, `so_tien`, `phuong_thuc`, `trang_thai`, `thanh_toan_luc`) VALUES
+(1, 50000, 'THE', 'HOAN_TAT', '2025-10-28 12:10:00'),
+(1, 27000, 'TIEN_MAT', 'HOAN_TAT', '2025-10-28 12:12:00'),
+(2, 33500, 'CHUYEN_KHOAN', 'CHO_XU_LY', '2025-10-28 12:45:00');
+
+-- ===============================
+-- Bảng liên kết invoice_payments
+-- ===============================
+CREATE TABLE `invoice_payments` (
+    `invoice_payment_id` int NOT NULL AUTO_INCREMENT,
+    `invoice_id` int NOT NULL,
+    `payment_id` int NOT NULL,
+    PRIMARY KEY (`invoice_payment_id`),
+    UNIQUE KEY `uniq_invoice_payment` (`invoice_id`,`payment_id`),
+    KEY `invoice_id` (`invoice_id`),
+    KEY `payment_id` (`payment_id`),
+    CONSTRAINT `invoice_payments_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`invoice_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `invoice_payments_ibfk_2` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`payment_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `invoice_payments` (`invoice_id`, `payment_id`) VALUES
+(1, 1),
+(1, 2),
+(2, 3);
+
+-- Ghi chú: Nếu cơ sở dữ liệu đã tồn tại, hãy thực thi các câu lệnh DROP tương ứng hoặc sử dụng công cụ migration của bạn để áp dụng các thay đổi cấu trúc trước khi chạy toàn bộ script này.
