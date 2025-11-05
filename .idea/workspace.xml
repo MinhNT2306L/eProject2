@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="da8ee44f-50d4-453e-9629-b6b7d47861df" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/ConnectDB/ConnectDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/ConnectDB/ConnectDB.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/DashBoardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/DashBoardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/MenuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/MenuController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/OrderSummaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/OrderSummaryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/FoodRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/FoodRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/TableRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/TableRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/FoodMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/FoodMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/service/TableSevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/service/TableService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.agent.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.edit.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/com/example/restaurant_management/View/OrderSummaryView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/com/example/restaurant_management/View/OrderSummaryView.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -48,6 +44,7 @@
     "Remote JVM Debug.Maven Debug.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/nguyenthanhminh/Desktop/eProject2",
@@ -58,7 +55,7 @@
     "nodejs_package_manager_path": "npm",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.JavaFX",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -108,6 +105,9 @@
       <workItem from="1762262457016" duration="200000" />
       <workItem from="1762262742910" duration="336000" />
       <workItem from="1762263097429" duration="10546000" />
+      <workItem from="1762279616068" duration="449000" />
+      <workItem from="1762346136690" duration="2357000" />
+      <workItem from="1762366520576" duration="947000" />
     </task>
     <servers />
   </component>
