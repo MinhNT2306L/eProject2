@@ -13,6 +13,10 @@ public class OrderItemMapper implements RowMapper<OrderItem> {
                 (Integer) rs.getObject("order_id"),
                 (Integer) rs.getObject("mon_id"),
                 (Integer) rs.getObject("so_luong"),
+                rs.getObject("order_ct_id", Integer.class),
+                rs.getObject("order_id", Integer.class),
+                rs.getObject("mon_id", Integer.class),
+                rs.getObject("so_luong", Integer.class),
                 rs.getBigDecimal("don_gia"),
                 rs.getBigDecimal("thanh_tien")
         );

@@ -8,16 +8,14 @@ public class Invoice {
     private Integer orderId;
     private String invoiceNumber;
     private BigDecimal totalAmount;
-    private BigDecimal tax;
-    private BigDecimal discount;
+
     private BigDecimal amountDue;
     private LocalDateTime issuedAt;
 
     public Invoice() {
     }
 
-    public Invoice(Integer invoiceId, Integer orderId, String invoiceNumber, BigDecimal totalAmount, BigDecimal tax,
-                   BigDecimal discount, BigDecimal amountDue, LocalDateTime issuedAt) {
+
         this.invoiceId = invoiceId;
         this.orderId = orderId;
         this.invoiceNumber = invoiceNumber;
@@ -60,20 +58,7 @@ public class Invoice {
         this.totalAmount = totalAmount;
     }
 
-    public BigDecimal getTax() {
-        return tax;
-    }
 
-    public void setTax(BigDecimal tax) {
-        this.tax = tax;
-    }
-
-    public BigDecimal getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
     }
 
     public BigDecimal getAmountDue() {

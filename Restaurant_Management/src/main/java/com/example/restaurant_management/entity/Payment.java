@@ -9,6 +9,24 @@ public class Payment {
     private BigDecimal amount;
     private String method;
     private String status;
+    public enum PaymentMethod {
+        TIEN_MAT,
+        THE,
+        CHUYEN_KHOAN,
+        VI_DIEN_TU
+    }
+
+    public enum PaymentStatus {
+        CHO_XU_LY,
+        HOAN_TAT,
+        THAT_BAI
+    }
+
+    private Integer paymentId;
+    private Integer orderId;
+    private BigDecimal amount;
+    private PaymentMethod method;
+    private PaymentStatus status;
     private LocalDateTime paidAt;
 
     public Payment() {
@@ -16,6 +34,8 @@ public class Payment {
 
     public Payment(Integer paymentId, Integer orderId, BigDecimal amount, String method, String status,
                    LocalDateTime paidAt) {
+    public Payment(Integer paymentId, Integer orderId, BigDecimal amount, PaymentMethod method,
+                   PaymentStatus status, LocalDateTime paidAt) {
         this.paymentId = paymentId;
         this.orderId = orderId;
         this.amount = amount;
@@ -61,6 +81,19 @@ public class Payment {
     }
 
     public void setStatus(String status) {
+    public PaymentMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(PaymentMethod method) {
+        this.method = method;
+    }
+
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PaymentStatus status) {
         this.status = status;
     }
 

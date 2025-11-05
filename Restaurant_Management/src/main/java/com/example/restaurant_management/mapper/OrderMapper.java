@@ -24,6 +24,21 @@ public class OrderMapper implements RowMapper<Order> {
                 orderTime,
                 rs.getBigDecimal("tong_tien"),
                 rs.getString("trang_thai")
+        Timestamp orderTimestamp = rs.getTimestamp("thoi_gian");
+        Order.OrderStatus status = null;
+        String statusValue = rs.getString("trang_thai");
+        if (statusValue != null) {
+            status = Order.OrderStatus.valueOf(statusValue);
+        }
+
+        return new Order(
+                rs.getObject("order_id", Integer.class),
+                rs.getObject("kh_id", Integer.class),
+                rs.getObject("nv_id", Integer.class),
+                rs.getObject("ban_id", Integer.class),
+                orderTimestamp != null ? orderTimestamp.toLocalDateTime() : null,
+                rs.getBigDecimal("tong_tien"),
+                status
         );
     }
 }

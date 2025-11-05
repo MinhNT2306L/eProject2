@@ -19,6 +19,27 @@ public class PaymentMapper implements RowMapper<Payment> {
                 rs.getString("phuong_thuc"),
                 rs.getString("trang_thai"),
                 paidAt
+        Payment.PaymentMethod method = null;
+        String methodValue = rs.getString("phuong_thuc");
+        if (methodValue != null) {
+            method = Payment.PaymentMethod.valueOf(methodValue);
+        }
+
+        Payment.PaymentStatus status = null;
+        String statusValue = rs.getString("trang_thai");
+        if (statusValue != null) {
+            status = Payment.PaymentStatus.valueOf(statusValue);
+        }
+
+        Timestamp paidTimestamp = rs.getTimestamp("thanh_toan_luc");
+
+        return new Payment(
+                rs.getObject("payment_id", Integer.class),
+                rs.getObject("order_id", Integer.class),
+                rs.getBigDecimal("so_tien"),
+                method,
+                status,
+                paidTimestamp != null ? paidTimestamp.toLocalDateTime() : null
         );
     }
 }

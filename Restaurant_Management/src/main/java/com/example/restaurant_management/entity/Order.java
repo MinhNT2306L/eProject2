@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Order {
+
     private Integer orderId;
     private Integer customerId;
     private Integer employeeId;
     private Integer tableId;
     private LocalDateTime orderTime;
     private BigDecimal totalAmount;
-    private String status;
+
 
     public Order() {
     }
 
-    public Order(Integer orderId, Integer customerId, Integer employeeId, Integer tableId, LocalDateTime orderTime,
-                 BigDecimal totalAmount, String status) {
+
         this.orderId = orderId;
         this.customerId = customerId;
         this.employeeId = employeeId;
@@ -74,11 +74,7 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-    public String getStatus() {
-        return status;
-    }
 
-    public void setStatus(String status) {
         this.status = status;
     }
 }

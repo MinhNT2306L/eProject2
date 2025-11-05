@@ -15,12 +15,18 @@ public class InvoiceMapper implements RowMapper<Invoice> {
         return new Invoice(
                 (Integer) rs.getObject("invoice_id"),
                 (Integer) rs.getObject("order_id"),
+        Timestamp issuedTimestamp = rs.getTimestamp("xuat_luc");
+
+        return new Invoice(
+                rs.getObject("invoice_id", Integer.class),
+                rs.getObject("order_id", Integer.class),
                 rs.getString("so_hoa_don"),
                 rs.getBigDecimal("tong_tien"),
                 rs.getBigDecimal("thue"),
                 rs.getBigDecimal("giam_gia"),
                 rs.getBigDecimal("phai_thu"),
                 issuedAt
+                issuedTimestamp != null ? issuedTimestamp.toLocalDateTime() : null
         );
     }
 }
