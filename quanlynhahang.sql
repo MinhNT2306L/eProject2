@@ -265,4 +265,6 @@ INSERT INTO `invoice_payments` (`invoice_id`, `payment_id`) VALUES
 (1, 2),
 (2, 3);
 
--- Ghi chú: Nếu cơ sở dữ liệu đã tồn tại, hãy thực thi các câu lệnh DROP tương ứng hoặc sử dụng công cụ migration của bạn để áp dụng các thay đổi cấu trúc trước khi chạy toàn bộ script này.
+-- ===============================
+-- Kết thúc tập lệnh tạo cơ sở dữ liệu và bảng
+-- ===============================
