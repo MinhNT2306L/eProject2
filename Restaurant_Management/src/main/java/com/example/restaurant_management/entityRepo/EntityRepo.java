@@ -18,7 +18,11 @@ public class EntityRepo<T> {
 
 
     public EntityRepo(RowMapper<T> mapper, String tableName) {
-        this.conn = ConnectDB.getConnection();
+        this(mapper, tableName, ConnectDB.getConnection());
+    }
+
+    public EntityRepo(RowMapper<T> mapper, String tableName, Connection connection) {
+        this.conn = connection;
         this.mapper = mapper;
         this.tableName = tableName;
     }
