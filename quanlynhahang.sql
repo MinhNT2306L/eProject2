@@ -183,9 +183,20 @@ CREATE TABLE `order_chitiet` (
     CONSTRAINT `order_chitiet_chk_2` CHECK ((`don_gia` >= 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dữ liệu order_chitiet mẫu
-INSERT INTO `order_chitiet` (`order_id`, `mon_id`, `so_luong`, `don_gia`) VALUES
-(1, 1, 1, 50000),
-(1, 3, 1, 20000),
-(2, 2, 1, 20000),
-(2, 3, 1, 15000);
+-- ===============================
+-- Bảng hoadon (lưu thông tin hóa đơn thanh toán)
+-- ===============================
+DROP TABLE IF EXISTS `hoadon`;
+CREATE TABLE `hoadon` (
+    `hoadon_id` int NOT NULL AUTO_INCREMENT,
+    `ban_id` int DEFAULT NULL,
+    `tong_tien` decimal(12,2) DEFAULT '0.00',
+    `phuong_thuc` varchar(50) DEFAULT NULL,
+    `thoi_gian` datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`hoadon_id`),
+    KEY `ban_id` (`ban_id`),
+    CONSTRAINT `hoadon_ibfk_1` FOREIGN KEY (`ban_id`) REFERENCES `ban` (`ban_id`) 
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
