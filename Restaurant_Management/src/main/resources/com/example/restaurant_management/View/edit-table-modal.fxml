@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="modalRoot" alignment="CENTER" styleClass="modal-overlay"
+           xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.restaurant_management.Controller.EditTableController">
+
+    <VBox fx:id="modalContainer" alignment="CENTER" fillWidth="false"
+          maxHeight="334.0" maxWidth="400" minWidth="400" prefHeight="334.0" prefWidth="400"
+          spacing="20" styleClass="modal-container">
+        <padding>
+            <Insets bottom="30" left="35" right="35" top="30" />
+        </padding>
+
+        <!-- Tiêu đề -->
+        <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2C3E50; -fx-padding: 0 0 5 0;"
+               text="SỬA THÔNG TIN BÀN" />
+
+        <!-- Form nhập -->
+        <VBox alignment="CENTER" prefWidth="330" spacing="15">
+            <HBox>
+                <children>
+                    <Label prefHeight="37.0" prefWidth="127.0" text="Số bàn:">
+                        <font>
+                            <Font name="System Bold" size="14.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtSoBan" prefHeight="40" prefWidth="290.0"
+                               promptText="VD: 5" styleClass="modal-text-field" />
+                </children>
+            </HBox>
+            <HBox>
+                <children>
+                    <Label prefHeight="37.0" prefWidth="127.0" text="Sức chứa:">
+                        <font>
+                            <Font name="System Bold" size="14.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtSucChua" prefHeight="40" prefWidth="290.0"
+                               promptText="VD: 4" styleClass="modal-text-field" />
+                </children>
+            </HBox>
+            <HBox>
+                <children>
+                    <Label prefHeight="37.0" prefWidth="127.0" text="Trạng thái:">
+                        <font>
+                            <Font name="System Bold" size="14.0" />
+                        </font>
+                    </Label>
+                    <ComboBox fx:id="cbTrangThai" prefHeight="40" prefWidth="290.0"
+                              promptText="Chọn trạng thái" styleClass="modal-comboBox">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="TRONG" />
+                                <String fx:value="DAT_TRUOC" />
+                                <String fx:value="PHUC_VU" />
+                                <String fx:value="DANG_SUA" />
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </children>
+            </HBox>
+        </VBox>
+
+        <!-- Nút hành động -->
+        <HBox alignment="CENTER" spacing="12" style="-fx-padding: 5 0 0 0;">
+            <Button onAction="#handleSave" prefHeight="42" prefWidth="120"
+                    styleClass="modal-button-save" text="Lưu" />
+            <Button onAction="#handleCancel" prefHeight="42" prefWidth="120"
+                    styleClass="modal-button-cancel" text="Hủy" />
+        </HBox>
+    </VBox>
+</StackPane>
