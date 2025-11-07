@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="modalRoot" alignment="CENTER" styleClass="modal-overlay" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.restaurant_management.Controller.AddTableController">
+<StackPane fx:id="modalRoot" alignment="CENTER" styleClass="modal-overlay" visible="false" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.restaurant_management.Controller.AddTableController">
 
     <!-- Hộp trắng modal - compact và đẹp -->
     <VBox fx:id="modalContainer" alignment="CENTER" fillWidth="false" maxHeight="334.0" maxWidth="400" minWidth="400" prefHeight="334.0" prefWidth="400" spacing="20" styleClass="modal-container">
