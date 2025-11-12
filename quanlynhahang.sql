@@ -73,7 +73,7 @@ CREATE TABLE `ban` (
     `ban_id` int NOT NULL AUTO_INCREMENT,
     `so_ban` int NOT NULL,
     `suc_chua` int DEFAULT NULL,
-    `trang_thai` enum('TRONG','DAT_TRUOC','PHUC_VU') DEFAULT 'TRONG',
+    `trang_thai` enum('TRONG','DAT_TRUOC','DANG_PHUC_VU') DEFAULT 'TRONG',
     PRIMARY KEY (`ban_id`),
     UNIQUE KEY `so_ban` (`so_ban`),
     CONSTRAINT `ban_chk_1` CHECK ((`suc_chua` > 0))
@@ -83,7 +83,7 @@ CREATE TABLE `ban` (
 INSERT INTO `ban` (`so_ban`, `suc_chua`, `trang_thai`) VALUES
 (1, 4, 'TRONG'),
 (2, 2, 'DAT_TRUOC'),
-(3, 6, 'PHUC_VU');
+(3, 6, 'DANG_PHUC_VU');
 
 -- ===============================
 -- Bảng monan
@@ -173,6 +173,7 @@ CREATE TABLE `order_chitiet` (
     `don_gia` decimal(10,2) DEFAULT NULL,
     `thanh_tien` decimal(12,2) GENERATED ALWAYS AS ((`so_luong` * `don_gia`)) STORED,
     PRIMARY KEY (`order_ct_id`),
+    UNIQUE KEY `uk_order_mon` (`order_id`, `mon_id`),
     KEY `order_id` (`order_id`),
     KEY `mon_id` (`mon_id`),
     CONSTRAINT `order_chitiet_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) 
@@ -189,14 +190,36 @@ CREATE TABLE `order_chitiet` (
 DROP TABLE IF EXISTS `hoadon`;
 CREATE TABLE `hoadon` (
     `hoadon_id` int NOT NULL AUTO_INCREMENT,
+    `order_id` int DEFAULT NULL,
     `ban_id` int DEFAULT NULL,
     `tong_tien` decimal(12,2) DEFAULT '0.00',
     `phuong_thuc` varchar(50) DEFAULT NULL,
     `thoi_gian` datetime DEFAULT CURRENT_TIMESTAMP,
+    `khach_tra` decimal(12,2) DEFAULT NULL,
+    `tien_thoi` decimal(12,2) DEFAULT NULL,
     PRIMARY KEY (`hoadon_id`),
     KEY `ban_id` (`ban_id`),
+    KEY `order_id` (`order_id`),
     CONSTRAINT `hoadon_ibfk_1` FOREIGN KEY (`ban_id`) REFERENCES `ban` (`ban_id`) 
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `hoadon_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) 
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+-- ===============================
+-- Bảng chitiethoadon (lưu chi tiết thông tin hóa đơn thanh toán)
+-- ===============================
+DROP TABLE IF EXISTS `chitiethoadon`;
+CREATE TABLE `chitiethoadon` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_hoadon` INT,
+    `id_mon` INT,
+    `so_luong` INT,
+    `gia` DOUBLE,
+    KEY `id_hoadon` (`id_hoadon`),
+    KEY `id_mon` (`id_mon`),
+    CONSTRAINT `chitiethoadon_ibfk_1` FOREIGN KEY (`id_hoadon`) REFERENCES `hoadon` (`hoadon_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `chitiethoadon_ibfk_2` FOREIGN KEY (`id_mon`) REFERENCES `monan` (`mon_id`)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

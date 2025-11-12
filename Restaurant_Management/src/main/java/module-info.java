@@ -1,6 +1,8 @@
 module com.example.restaurant_management {
     requires javafx.controls;
     requires javafx.fxml;
+    requires transitive javafx.base;
+    requires transitive javafx.graphics;
 
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
@@ -9,7 +11,9 @@ module com.example.restaurant_management {
 
     opens com.example.restaurant_management to javafx.fxml;
     opens com.example.restaurant_management.Controller to javafx.fxml;
+    opens com.example.restaurant_management.entity to javafx.base;
 
     exports com.example.restaurant_management;
     exports com.example.restaurant_management.Controller;
+    exports com.example.restaurant_management.entity;
 }

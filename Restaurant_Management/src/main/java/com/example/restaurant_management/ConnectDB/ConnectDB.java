@@ -10,8 +10,6 @@ public class ConnectDB {
     private static final String USER = "root";
     private static final String PASSWORD = "1234";
 
-    private static Connection connection;
-
     private ConnectDB() {}
 
     public static Connection getConnection() {
