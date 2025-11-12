@@ -278,7 +278,7 @@ public class PaymentController implements Initializable {
 
                 conn.commit();
 
-                // Generate and print bill
+                // Generate PDF and show bill preview
                 BillGenerator.generateBill(invoice, currentOrder, orderDetails, currentTable);
 
                 // Show success message
