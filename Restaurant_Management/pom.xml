@@ -85,6 +85,10 @@
                 <configuration>
                     <source>24</source>
                     <target>24</target>
+                    <compilerArgs>
+                        <arg>--add-reads</arg>
+                        <arg>com.example.restaurant_management=ALL-UNNAMED</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

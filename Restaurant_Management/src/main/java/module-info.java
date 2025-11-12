@@ -9,6 +9,7 @@ module com.example.restaurant_management {
 
     opens com.example.restaurant_management to javafx.fxml;
     opens com.example.restaurant_management.Controller to javafx.fxml;
+    opens com.example.restaurant_management.service;
 
     exports com.example.restaurant_management;
     exports com.example.restaurant_management.Controller;
