@@ -76,22 +76,42 @@ public class TableService {
             // Sự kiện click
             card.setOnMouseClicked(e -> {
                 try {
-                    FXMLLoader loader = new FXMLLoader(
-                            TableService.class.getResource("/com/example/restaurant_management/View/OrderSummaryView.fxml")
-                    );
-                    Parent root = loader.load();
+                    // Check if table has an active order
+                    com.example.restaurant_management.entityRepo.OrderRepo orderRepo = 
+                        new com.example.restaurant_management.entityRepo.OrderRepo();
+                    com.example.restaurant_management.entity.Order activeOrder = 
+                        orderRepo.findActiveOrderByTableId(table.getTableId());
 
-                    // Lấy controller
-                    OrderSummaryController controller = loader.getController();
+                    if (activeOrder != null && (activeOrder.getTrangThai().equals("MOI") || 
+                        activeOrder.getTrangThai().equals("DANG_PHUC_VU"))) {
+                        // Table has active order - open payment screen
+                        FXMLLoader loader = new FXMLLoader(
+                                TableService.class.getResource("/com/example/restaurant_management/View/PaymentView.fxml")
+                        );
+                        Parent root = loader.load();
 
-                    // Truyền dữ liệu bàn vào controller
-                    controller.setTableInfo(table);
+                        com.example.restaurant_management.Controller.PaymentController controller = loader.getController();
+                        controller.setTableInfo(table);
 
-                    // Tạo stage mới để hiển thị giao diện Order
-                    Stage stage = new Stage();
-                    stage.setTitle("Order - Bàn " + table.getTableNumber());
-                    stage.setScene(new Scene(root));
-                    stage.show();
+                        Stage stage = new Stage();
+                        stage.setTitle("Thanh toán - Bàn " + table.getTableNumber());
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    } else {
+                        // No active order - open order screen
+                        FXMLLoader loader = new FXMLLoader(
+                                TableService.class.getResource("/com/example/restaurant_management/View/OrderSummaryView.fxml")
+                        );
+                        Parent root = loader.load();
+
+                        OrderSummaryController controller = loader.getController();
+                        controller.setTableInfo(table);
+
+                        Stage stage = new Stage();
+                        stage.setTitle("Order - Bàn " + table.getTableNumber());
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    }
 
                 } catch (IOException ex) {
                     ex.printStackTrace();

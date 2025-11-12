@@ -1,17 +1,30 @@
 package com.example.restaurant_management.Controller;
 
+import com.example.restaurant_management.ConnectDB.ConnectDB;
 import com.example.restaurant_management.entity.Food;
+import com.example.restaurant_management.entity.Order;
+import com.example.restaurant_management.entity.OrderDetail;
 import com.example.restaurant_management.entity.Table;
 import com.example.restaurant_management.entityRepo.FoodRepo;
+import com.example.restaurant_management.entityRepo.OrderDetailRepo;
+import com.example.restaurant_management.entityRepo.OrderRepo;
+import com.example.restaurant_management.entityRepo.TableRepo;
 import com.example.restaurant_management.mapper.FoodMapper;
+import com.example.restaurant_management.mapper.TableMapper;
+import com.example.restaurant_management.service.UserSession;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.geometry.Insets;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,20 +164,99 @@ public class OrderSummaryController {
 
     @FXML
     public void initialize() {
-        btnPay.setOnAction(e -> handlePayment());
+        btnPay.setText("Gửi bếp"); // Change button text to "Send to Kitchen"
+        btnPay.setOnAction(e -> handleSendToKitchen());
         // Khởi tạo hóa đơn trống
         updateOrderSummary();
     }
 
-    private void handlePayment() {
-        System.out.println("Thanh toán tổng: " + totalPrice + " VND cho bàn " + currentTable.getTableNumber());
-        System.out.println("Chi tiết order:");
-        for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
-            System.out.println(entry.getKey().getFoodName() + " - Số lượng: " + entry.getValue());
+    private void handleSendToKitchen() {
+        if (orderedItems.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Cảnh báo");
+            alert.setHeaderText(null);
+            alert.setContentText("Vui lòng chọn ít nhất một món ăn!");
+            alert.showAndWait();
+            return;
         }
 
-        // TODO: Ghi `orderedItems` (Map) và `totalPrice` vào CSDL
-        // Bạn sẽ cần tạo 2 bảng: `orders` (table_id, total_price, status)
-        // và `order_details` (order_id, food_id, quantity, price)
+        if (currentTable == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Không tìm thấy thông tin bàn!");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            Connection conn = ConnectDB.getConnection();
+            conn.setAutoCommit(false); // Start transaction
+
+            try {
+                // Create Order
+                Order order = new Order();
+                order.setKhId(null); // Customer ID can be null for walk-in customers
+                order.setNvId(UserSession.getCurrentEmployeeId());
+                order.setBanId(currentTable.getTableId());
+                order.setThoiGian(LocalDateTime.now());
+                order.setTongTien(totalPrice);
+                order.setTrangThai("MOI"); // New order
+
+                OrderRepo orderRepo = new OrderRepo();
+                int orderId = orderRepo.createOrder(order);
+
+                // Create Order Details
+                OrderDetailRepo orderDetailRepo = new OrderDetailRepo();
+                for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
+                    Food food = entry.getKey();
+                    Integer quantity = entry.getValue();
+
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setOrderId(orderId);
+                    orderDetail.setMonId(food.getFoodId());
+                    orderDetail.setSoLuong(quantity);
+                    orderDetail.setDonGia(food.getPrice());
+                    orderDetail.setThanhTien(food.getPrice() * quantity);
+
+                    orderDetailRepo.createOrderDetail(orderDetail);
+                }
+
+                // Update table status to PHUC_VU (Serving)
+                TableRepo tableRepo = new TableRepo(new TableMapper());
+                tableRepo.updateTableStatus(conn, currentTable.getTableId(), "PHUC_VU");
+
+                conn.commit(); // Commit transaction
+
+                // Show success message
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Đã gửi đơn hàng đến bếp thành công!");
+                alert.showAndWait();
+
+                // Clear ordered items and close window
+                orderedItems.clear();
+                updateOrderSummary();
+
+                // Close the order window and return to dashboard
+                Stage stage = (Stage) btnPay.getScene().getWindow();
+                stage.close();
+
+            } catch (SQLException e) {
+                conn.rollback(); // Rollback on error
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Có lỗi xảy ra khi tạo đơn hàng: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 }
