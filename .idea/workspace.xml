@@ -5,7 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="da8ee44f-50d4-453e-9629-b6b7d47861df" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/BillController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/BillModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entity/HoaDon.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entity/Order.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entity/OrderDetail.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/HoaDonRepo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/OrderDetailRepo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/OrderRepo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/HoaDonMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/OrderDetailMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/OrderMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/OrderSummaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/OrderSummaryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/TableController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/TableController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entity/Table.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entity/Table.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/FoodRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/FoodRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/TableRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/TableRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/TableMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/TableMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/com/example/restaurant_management/View/OrderSummaryView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/com/example/restaurant_management/View/OrderSummaryView.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/quanlynhahang.sql" beforeDir="false" afterPath="$PROJECT_DIR$/quanlynhahang.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,12 +43,15 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="34y7JcrW7cGCd5CAYUGsg8iDmH6" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -43,7 +65,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/nguyenthanhminh/Desktop/eProject2",
+    "last_opened_file_path": "/Users/nguyenthanhminh/Downloads/eProject2 4",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -107,7 +129,10 @@
       <workItem from="1762262742910" duration="336000" />
       <workItem from="1762263097429" duration="10546000" />
       <workItem from="1762402754828" duration="248000" />
-      <workItem from="1762449581831" duration="5308000" />
+      <workItem from="1762449581831" duration="6687000" />
+      <workItem from="1762518478871" duration="1577000" />
+      <workItem from="1762749666988" duration="13762000" />
+      <workItem from="1762912543843" duration="3053000" />
     </task>
     <servers />
   </component>

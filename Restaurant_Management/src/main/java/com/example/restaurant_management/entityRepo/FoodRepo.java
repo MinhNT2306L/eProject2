@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FoodRepo extends EntityRepo<Food> {
 
@@ -17,7 +18,7 @@ public class FoodRepo extends EntityRepo<Food> {
 
     public List<Food> findAllFoods() {
         List<Food> foodList = new ArrayList<>();
-        String sql = "SELECT * FROM monan";
+        String sql = "SELECT * FROM monan ORDER BY mon_id";
         try (PreparedStatement stmt = this.getConn().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
@@ -27,5 +28,20 @@ public class FoodRepo extends EntityRepo<Food> {
             throw new RuntimeException(e);
         }
         return foodList;
+    }
+
+    public Optional<Food> findById(int foodId) {
+        String sql = "SELECT * FROM monan WHERE mon_id = ?";
+        try (PreparedStatement stmt = this.getConn().prepareStatement(sql)) {
+            stmt.setInt(1, foodId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(this.getMapper().mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.empty();
     }
 }

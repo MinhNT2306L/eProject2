@@ -2,169 +2,197 @@ package com.example.restaurant_management.Controller;
 
 import com.example.restaurant_management.entity.Food;
 import com.example.restaurant_management.entity.Table;
-import com.example.restaurant_management.entityRepo.FoodRepo;
-import com.example.restaurant_management.mapper.FoodMapper;
+import com.example.restaurant_management.entityRepo.*;
+import com.example.restaurant_management.mapper.*;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.Pane;
-import java.util.HashMap;
+import javafx.scene.layout.*;
+
 import java.util.List;
-import java.util.Map;
 
 public class OrderSummaryController {
 
-    @FXML
-    private Label lblTableInfo;
-    @FXML
-    private Label lblTotalPrice;
-    @FXML
-    private Button btnPay;
-    @FXML
-    private FlowPane menuContainer;
-
-    // Biến FXML mới từ file FXML
-    @FXML
-    private VBox orderDetailsContainer;
-
-    // Biến FXML cho VBox ở <top>
-    @FXML
-    private VBox topVBox;
+    @FXML private Label lblTableInfo;
+    @FXML private Label lblTotalPrice;
+    @FXML private Button btnPay;
+    @FXML private FlowPane menuContainer;
+    @FXML private VBox orderDetailsContainer;
+    @FXML private VBox topVBox;
 
     private Table currentTable;
-    private double totalPrice = 0.0;
 
-    // Map để lưu các món đã order: Key = Food, Value = Số lượng
-    private Map<Food, Integer> orderedItems = new HashMap<>();
+    // Repos
+    private final OrderRepo orderRepo = new OrderRepo(new OrderMapper());
+    private final OrderDetailRepo orderDetailRepo = new OrderDetailRepo(new OrderDetailMapper());
+    private final HoaDonRepo hoaDonRepo = new HoaDonRepo(new HoaDonMapper());
+    private final TableRepo tableRepo = new TableRepo(new TableMapper());
+    private final FoodRepo foodRepo = new FoodRepo(new FoodMapper());
 
-    // khi bàn được truyền vào
-    public void setTableInfo(Table table) {
-        this.currentTable = table;
-        lblTableInfo.setText("Bàn " + table.getTableNumber() + " - " + table.getStatus());
-        // Style cho VBox top
-        topVBox.setStyle("-fx-background-color: #f8f8f8; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
-        loadMenu();
+    private Integer currentOrderId = null;
+
+    @FXML
+    public void initialize() {
+        btnPay.setText("Thanh toán");
+        btnPay.setOnAction(e -> handlePayment());
     }
 
-    // tải danh sách món ăn từ DB (Giữ nguyên)
+    public void setTableInfo(Table table) {
+        this.currentTable = table;
+        lblTableInfo.setText("Bàn " + table.getTableNumber() + " (" + table.getStatus() + ")");
+        topVBox.setStyle("-fx-background-color: #f8f8f8; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
+        ensureOpenOrder();       // tạo/lấy order tạm
+        loadMenu();              // hiển thị menu
+        refreshSummary();        // vẽ hóa đơn tạm (từ DB)
+    }
+
     private void loadMenu() {
         menuContainer.getChildren().clear();
-        FoodRepo repo = new FoodRepo(new FoodMapper());
-        List<Food> foods = repo.findAllFoods();
+        List<Food> foods = foodRepo.findAllFoods();
 
         for (Food food : foods) {
-            VBox card = createFoodCard(food);
-            menuContainer.getChildren().add(card);
+            menuContainer.getChildren().add(createFoodCard(food));
         }
     }
 
-    // tạo thẻ hiển thị món ăn (SỬ DỤNG PHIÊN BẢN Ở BƯỚC 1)
     private VBox createFoodCard(Food food) {
         VBox box = new VBox();
         box.setSpacing(8);
         box.setPadding(new Insets(10));
-        box.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 10; "
-                + "-fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-alignment: center;");
+        box.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10;");
         box.setPrefSize(160, 150);
 
         Label name = new Label(food.getFoodName());
         name.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
         Label price = new Label(String.format("%,.0f VND", food.getPrice()));
-        price.setStyle("-fx-text-fill: #009688; -fx-font-size: 13px;");
 
         Spinner<Integer> quantitySpinner = new Spinner<>(1, 20, 1);
-        quantitySpinner.setPrefWidth(80);
-        quantitySpinner.setStyle("-fx-font-size: 13px;");
 
         Button addBtn = new Button("Thêm");
-        addBtn.setStyle("-fx-background-color: #009688; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold;");
-
-        // Cập nhật: Khi nhấn nút, lấy cả số lượng
-        addBtn.setOnAction(e -> addFoodToOrder(food, quantitySpinner.getValue()));
+        addBtn.setOnAction(e -> onAddFood(food, quantitySpinner.getValue()));
 
         box.getChildren().addAll(name, price, quantitySpinner, addBtn);
         return box;
     }
 
-    // XỬ LÝ KHI THÊM MÓN (CẬP NHẬT)
-    private void addFoodToOrder(Food food, int quantity) {
-        // Cập nhật số lượng trong map, nếu đã có thì cộng dồn
-        orderedItems.put(food, orderedItems.getOrDefault(food, 0) + quantity);
+    private static final String TABLE_TRONG = "TRONG";
+    private static final String TABLE_DANG_PHUC_VU = "DANG_PHUC_VU";
+    private static final String ORDER_DANG_PHUC_VU = "DANG_PHUC_VU";
 
-        // Cập nhật lại toàn bộ UI hóa đơn và tổng tiền
-        updateOrderSummary();
+    private void ensureOpenOrder() {
+        var open = orderRepo.findOpenOrderByTable(currentTable.getTableId());
+        if (open.isPresent()) {
+            currentOrderId = open.get().getOrderId();
+            try {
+                if ("MOI".equals(open.get().getTrangThai())) {
+                    orderRepo.updateStatus(currentOrderId, ORDER_DANG_PHUC_VU);
+                    tableRepo.updateStatusSimple(currentTable.getTableId(), TABLE_DANG_PHUC_VU);
+                }
+            } catch (Exception e) { showError(e); }
+        } else {
+            try {
+                currentOrderId = orderRepo.createOrder(currentTable.getTableId(), null);
+                orderRepo.updateStatus(currentOrderId, ORDER_DANG_PHUC_VU);
+                tableRepo.updateStatusSimple(currentTable.getTableId(), TABLE_DANG_PHUC_VU);
+            } catch (Exception e) { showError(e); }
+        }
     }
 
-    // HÀM MỚI: XÓA MỘT MÓN KHỎI ORDER
-    private void removeFoodFromOrder(Food food) {
-        orderedItems.remove(food);
-        updateOrderSummary(); // Cập nhật lại UI
+    private void onAddFood(Food f, int qty) {
+        try {
+            ensureOpenOrder();
+            orderDetailRepo.addOrUpdateItem(currentOrderId, f.getFoodId(), qty, f.getPrice());
+            orderRepo.updateTotal(currentOrderId);
+            refreshSummary();
+        } catch (Exception e) { showError(e); }
     }
 
-    // HÀM MỚI: CẬP NHẬT UI HÓA ĐƠN VÀ TỔNG TIỀN
-    private void updateOrderSummary() {
-        // 1. Xóa toàn bộ danh sách cũ
+    private void refreshSummary() {
         orderDetailsContainer.getChildren().clear();
+        if (currentOrderId == null) { lblTotalPrice.setText("0 VND"); return; }
 
-        // 2. Reset tổng tiền
-        totalPrice = 0.0;
+        var details = orderDetailRepo.findByOrder(currentOrderId);
+        double total = 0;
 
-        // 3. Tạo lại danh sách từ Map
-        for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
-            Food food = entry.getKey();
-            Integer quantity = entry.getValue();
-            double itemTotal = food.getPrice() * quantity;
-            totalPrice += itemTotal; // Cộng dồn vào tổng tiền
+        for (var d : details) {
+            double sub = d.getThanhTien();
+            total += sub;
 
-            // Tạo HBox để hiển thị "Tên x Số lượng" và nút "Xóa"
-            HBox itemBox = new HBox();
-            itemBox.setSpacing(10);
-            itemBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-            itemBox.setStyle("-fx-padding: 5; -fx-background-color: #ffffff; -fx-background-radius: 5;");
+            Food f = foodRepo.findById(d.getMonId()).orElse(null);
+            String tenMon = (f != null ? f.getFoodName() : ("Món #" + d.getMonId()));
 
-            Label itemName = new Label(food.getFoodName() + " x" + quantity);
-            itemName.setStyle("-fx-font-weight: bold;");
-            Label itemPrice = new Label(String.format("%,.0f", itemTotal));
+            HBox row = new HBox(10);
+            row.setStyle("-fx-padding: 6; -fx-background-color: #ffffff; -fx-background-radius: 6;");
 
-            // Nút "X" để xóa
-            Button removeBtn = new Button("X");
-            removeBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 15; -fx-padding: 1 6;");
-            removeBtn.setOnAction(e -> removeFoodFromOrder(food));
+            Label lbName = new Label(tenMon + " x" + d.getSoLuong());
+            Label lbPrice = new Label(String.format("%,.0f", sub));
 
-            // Dùng Pane rỗng để đẩy giá và nút xóa sang phải
+            Button btnRemove = new Button("X");
+            btnRemove.setOnAction(e -> {
+                try {
+                    orderDetailRepo.removeItem(currentOrderId, d.getMonId());
+                    orderRepo.updateTotal(currentOrderId);
+                    refreshSummary();
+                } catch (Exception ex) { showError(ex); }
+            });
+
             Pane spacer = new Pane();
             HBox.setHgrow(spacer, Priority.ALWAYS);
-
-            itemBox.getChildren().addAll(itemName, spacer, itemPrice, removeBtn);
-            orderDetailsContainer.getChildren().add(itemBox);
+            row.getChildren().addAll(lbName, spacer, lbPrice, btnRemove);
+            orderDetailsContainer.getChildren().add(row);
         }
 
-        // 4. Cập nhật label tổng tiền
-        lblTotalPrice.setText(String.format("%,.0f VND", totalPrice));
-    }
-
-
-    @FXML
-    public void initialize() {
-        btnPay.setOnAction(e -> handlePayment());
-        // Khởi tạo hóa đơn trống
-        updateOrderSummary();
+        lblTotalPrice.setText(String.format("%,.0f VND", total));
     }
 
     private void handlePayment() {
-        System.out.println("Thanh toán tổng: " + totalPrice + " VND cho bàn " + currentTable.getTableNumber());
-        System.out.println("Chi tiết order:");
-        for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
-            System.out.println(entry.getKey().getFoodName() + " - Số lượng: " + entry.getValue());
+        if (currentOrderId == null) return;
+        var details = orderDetailRepo.findByOrder(currentOrderId);
+        double total = details.stream().mapToDouble(d -> d.getThanhTien()).sum();
+
+        ChoiceDialog<String> pm = new ChoiceDialog<>("TIEN_MAT", "TIEN_MAT", "CHUYEN_KHOAN");
+        pm.setTitle("Thanh toán"); pm.setHeaderText("Chọn phương thức");
+        var method = pm.showAndWait().orElse(null);
+        if (method == null) return;
+
+        Double khachTra = null, tienThoi = null;
+        if ("TIEN_MAT".equals(method)) {
+            TextInputDialog cash = new TextInputDialog();
+            cash.setTitle("Tiền mặt"); cash.setHeaderText("Nhập số tiền khách đưa");
+            var s = cash.showAndWait().orElse(null);
+            if (s == null) return;
+            khachTra = Double.parseDouble(s);
+            tienThoi = Math.max(0, khachTra - total);
         }
 
-        // TODO: Ghi `orderedItems` (Map) và `totalPrice` vào CSDL
-        // Bạn sẽ cần tạo 2 bảng: `orders` (table_id, total_price, status)
-        // và `order_details` (order_id, food_id, quantity, price)
+        try {
+            orderRepo.updateTotal(currentOrderId);
+            orderRepo.updateStatus(currentOrderId, "DA_THANH_TOAN");
+            int hoaDonId = hoaDonRepo.createFromOrder(currentOrderId, currentTable.getTableId(), total, method, khachTra, tienThoi);
+            tableRepo.updateStatusSimple(currentTable.getTableId(), "TRONG");
+
+            Alert ok = new Alert(Alert.AlertType.INFORMATION);
+            ok.setTitle("Thanh toán thành công");
+            ok.setHeaderText("Hóa đơn #" + hoaDonId);
+            ok.setContentText(
+                    "Tổng: " + String.format("%,.0f", total) + " VND\nPhương thức: " + method +
+                            (khachTra != null
+                                    ? "\nKhách trả: " + String.format("%,.0f", khachTra) +
+                                    " VND\nTiền thối: " + String.format("%,.0f", tienThoi) + " VND"
+                                    : "")
+            );
+            ok.showAndWait();
+            // Reset UI
+            currentOrderId = null;
+            lblTotalPrice.setText("0 VND");
+            orderDetailsContainer.getChildren().clear();
+
+        } catch (Exception e) { showError(e); }
+    }
+
+    private void showError(Exception e) {
+        e.printStackTrace();
+        new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
     }
 }
