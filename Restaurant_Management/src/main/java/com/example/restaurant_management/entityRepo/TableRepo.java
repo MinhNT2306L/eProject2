@@ -1,5 +1,6 @@
 package com.example.restaurant_management.entityRepo;
 
+import com.example.restaurant_management.ConnectDB.ConnectDB;
 import com.example.restaurant_management.entity.Table;
 import com.example.restaurant_management.mapper.RowMapper;
 

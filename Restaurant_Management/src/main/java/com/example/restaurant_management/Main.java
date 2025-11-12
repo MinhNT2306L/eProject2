@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/restaurant_management/View/login-view.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/restaurant_management/View/dashboard-view.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         primaryStage.setTitle("LOCAL FOOD - Đăng nhập");
