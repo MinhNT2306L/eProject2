@@ -39,31 +39,24 @@ public class OrderSummaryController {
     private Button btnPay;
     @FXML
     private FlowPane menuContainer;
-
-    // Biến FXML mới từ file FXML
     @FXML
     private VBox orderDetailsContainer;
-
-    // Biến FXML cho VBox ở <top>
     @FXML
     private VBox topVBox;
 
     private Table currentTable;
     private double totalPrice = 0.0;
 
-    // Map để lưu các món đã order: Key = Food, Value = Số lượng
     private Map<Food, Integer> orderedItems = new HashMap<>();
 
     // khi bàn được truyền vào
     public void setTableInfo(Table table) {
         this.currentTable = table;
         lblTableInfo.setText("Bàn " + table.getTableNumber() + " - " + table.getStatus());
-        // Style cho VBox top
         topVBox.setStyle("-fx-background-color: #f8f8f8; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
         loadMenu();
     }
 
-    // tải danh sách món ăn từ DB (Giữ nguyên)
     private void loadMenu() {
         menuContainer.getChildren().clear();
         FoodRepo repo = new FoodRepo(new FoodMapper());
@@ -75,7 +68,6 @@ public class OrderSummaryController {
         }
     }
 
-    // tạo thẻ hiển thị món ăn (SỬ DỤNG PHIÊN BẢN Ở BƯỚC 1)
     private VBox createFoodCard(Food food) {
         VBox box = new VBox();
         box.setSpacing(8);
@@ -97,23 +89,19 @@ public class OrderSummaryController {
         Button addBtn = new Button("Thêm");
         addBtn.setStyle("-fx-background-color: #009688; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold;");
 
-        // Cập nhật: Khi nhấn nút, lấy cả số lượng
         addBtn.setOnAction(e -> addFoodToOrder(food, quantitySpinner.getValue()));
 
         box.getChildren().addAll(name, price, quantitySpinner, addBtn);
         return box;
     }
 
-    // XỬ LÝ KHI THÊM MÓN (CẬP NHẬT)
     private void addFoodToOrder(Food food, int quantity) {
         // Cập nhật số lượng trong map, nếu đã có thì cộng dồn
         orderedItems.put(food, orderedItems.getOrDefault(food, 0) + quantity);
 
-        // Cập nhật lại toàn bộ UI hóa đơn và tổng tiền
         updateOrderSummary();
     }
 
-    // HÀM MỚI: XÓA MỘT MÓN KHỎI ORDER
     private void removeFoodFromOrder(Food food) {
         orderedItems.remove(food);
         updateOrderSummary(); // Cập nhật lại UI
@@ -239,7 +227,7 @@ public class OrderSummaryController {
                 orderedItems.clear();
                 updateOrderSummary();
 
-                // Close the order window and return to dashboard
+                  // Close the order window and return to dashboard
                 Stage stage = (Stage) btnPay.getScene().getWindow();
                 stage.close();
 
