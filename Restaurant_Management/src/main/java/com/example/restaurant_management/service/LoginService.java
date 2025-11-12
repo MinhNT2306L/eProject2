@@ -1,6 +1,8 @@
 package com.example.restaurant_management.service;
 
 import com.example.restaurant_management.ConnectDB.ConnectDB;
+import com.example.restaurant_management.entity.Employee;
+import com.example.restaurant_management.entityRepo.EmployeeRepo;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,6 +21,12 @@ public class LoginService {
             ResultSet rs = conn.prepareStatement(sql).executeQuery();
             while(rs.next()){
                 if (password.equals(rs.getString("password"))){
+                    // Store current employee in session
+                    EmployeeRepo employeeRepo = new EmployeeRepo();
+                    Employee employee = employeeRepo.findByUsernameAndPassword(userName, password);
+                    if (employee != null) {
+                        UserSession.setCurrentEmployee(employee);
+                    }
                     return rs.getString("role_name");
                 }
             }
@@ -31,6 +39,7 @@ public class LoginService {
     }
 
     public static void logout(Stage primaryStage){
+        UserSession.clear(); // Clear session on logout
         try {
             FXMLLoader loader = new FXMLLoader(LoginService.class.getResource("/com/example/restaurant_management/View/login-view.fxml"));
             Parent root = loader.load();
