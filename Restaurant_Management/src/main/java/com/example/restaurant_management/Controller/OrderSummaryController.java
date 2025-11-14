@@ -21,6 +21,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.Parent;
+import javafx.fxml.FXMLLoader;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -189,7 +192,7 @@ public class OrderSummaryController {
                 order.setBanId(currentTable.getTableId());
                 order.setThoiGian(LocalDateTime.now());
                 order.setTongTien(totalPrice);
-                order.setTrangThai("MOI"); // New order
+                order.setTrangThai("DANG_PHUC_VU"); // Order is being served
 
                 OrderRepo orderRepo = new OrderRepo();
                 int orderId = orderRepo.createOrder(order);
@@ -220,16 +223,19 @@ public class OrderSummaryController {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thành công");
                 alert.setHeaderText(null);
-                alert.setContentText("Đã gửi đơn hàng đến bếp thành công!");
+                alert.setContentText("Đã gửi đơn hàng đến bếp thành công! Trạng thái bàn đã chuyển sang 'Đang phục vụ'.");
                 alert.showAndWait();
 
                 // Clear ordered items and close window
                 orderedItems.clear();
                 updateOrderSummary();
 
-                  // Close the order window and return to dashboard
+                // Close the order window and return to dashboard
                 Stage stage = (Stage) btnPay.getScene().getWindow();
                 stage.close();
+                
+                // Refresh dashboard to update table status
+                refreshDashboard();
 
             } catch (SQLException e) {
                 conn.rollback(); // Rollback on error
@@ -245,6 +251,61 @@ public class OrderSummaryController {
             alert.setHeaderText(null);
             alert.setContentText("Có lỗi xảy ra khi tạo đơn hàng: " + e.getMessage());
             alert.showAndWait();
+        }
+    }
+    
+    private void refreshDashboard() {
+        try {
+            // Tìm dashboard window thông qua owner
+            Stage currentStage = (Stage) btnPay.getScene().getWindow();
+            Stage dashboardStage = null;
+            
+            // Kiểm tra owner
+            javafx.stage.Window owner = currentStage.getOwner();
+            if (owner instanceof Stage) {
+                dashboardStage = (Stage) owner;
+            }
+            
+            if (dashboardStage == null) {
+                // Tìm dashboard window trong tất cả các stage đang mở
+                for (javafx.stage.Window window : javafx.stage.Window.getWindows()) {
+                    if (window instanceof Stage stage) {
+                        if (stage.getTitle() != null && stage.getTitle().contains("Dashboard")) {
+                            dashboardStage = stage;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (dashboardStage != null && dashboardStage.getScene() != null) {
+                Scene scene = dashboardStage.getScene();
+                Parent root = scene.getRoot();
+                
+                // Tìm DashBoardController và refresh
+                Object controller = root.getUserData();
+                if (controller instanceof DashBoardController) {
+                    ((DashBoardController) controller).refreshTableList();
+                } else {
+                    // Reload dashboard view
+                    reloadDashboardView(dashboardStage);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void reloadDashboardView(Stage dashboardStage) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/com/example/restaurant_management/View/dashboard-view.fxml")
+            );
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            dashboardStage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

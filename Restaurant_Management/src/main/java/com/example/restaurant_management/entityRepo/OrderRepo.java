@@ -17,7 +17,11 @@ public class OrderRepo {
     private final OrderMapper mapper;
 
     public OrderRepo() {
-        this.conn = ConnectDB.getConnection();
+        try {
+            this.conn = ConnectDB.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("Không thể kết nối đến database: " + e.getMessage(), e);
+        }
         this.mapper = new OrderMapper();
     }
 
@@ -108,6 +112,21 @@ public class OrderRepo {
             ps.setInt(2, orderId);
             ps.executeUpdate();
         }
+    }
+
+    public List<Order> getAllOrders() {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM orders ORDER BY thoi_gian DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    orders.add(mapper.mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return orders;
     }
 }
 

@@ -10,11 +10,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/restaurant_management/View/dashboard-view.fxml"));
+        // Hiển thị màn hình login đầu tiên
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/restaurant_management/View/login-view.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         primaryStage.setTitle("LOCAL FOOD - Đăng nhập");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false); // Không cho phép resize màn hình login
+        primaryStage.centerOnScreen(); // Căn giữa màn hình
         primaryStage.show();
     }
 

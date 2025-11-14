@@ -13,10 +13,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Spinner;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -53,12 +58,25 @@ public class PaymentController implements Initializable {
     private VBox qrCodeContainer;
     @FXML
     private ImageView qrCodeImage;
+    @FXML
+    private FlowPane menuContainer;
+    @FXML
+    private VBox selectedItemsContainer;
+    @FXML
+    private VBox selectedItemsList;
+    @FXML
+    private Button btnAddItems;
+    @FXML
+    private Button btnCancelAdd;
 
     private Table currentTable;
     private Order currentOrder;
     private List<OrderDetail> orderDetails;
     private String selectedPaymentMethod;
     private double totalAmount = 0.0;
+    
+    // Map để lưu các món đã chọn để thêm (Food -> Quantity)
+    private java.util.Map<Food, Integer> selectedItemsToAdd = new java.util.HashMap<>();
 
     private OrderRepo orderRepo;
     private OrderDetailRepo orderDetailRepo;
@@ -105,6 +123,176 @@ public class PaymentController implements Initializable {
 
         // Display invoice details
         displayInvoiceDetails();
+        
+        // Load menu for adding more items
+        loadMenu();
+    }
+    
+    private void loadMenu() {
+        menuContainer.getChildren().clear();
+        List<Food> foods = foodRepo.findAllFoods();
+        
+        for (Food food : foods) {
+            VBox card = createFoodCard(food);
+            menuContainer.getChildren().add(card);
+        }
+    }
+    
+    private VBox createFoodCard(Food food) {
+        VBox box = new VBox();
+        box.setSpacing(8);
+        box.setPadding(new Insets(10));
+        box.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 10; "
+                + "-fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-border-width: 1; -fx-alignment: center;");
+        box.setPrefSize(160, 150);
+
+        Label name = new Label(food.getFoodName());
+        name.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-wrap-text: true;");
+        name.setMaxWidth(140);
+
+        Label price = new Label(String.format("%,.0f VND", food.getPrice()));
+        price.setStyle("-fx-text-fill: #E67E22; -fx-font-size: 13px; -fx-font-weight: bold;");
+
+        Spinner<Integer> quantitySpinner = new Spinner<>(1, 20, 1);
+        quantitySpinner.setPrefWidth(80);
+        quantitySpinner.setStyle("-fx-font-size: 13px;");
+
+        Button addBtn = new Button("Thêm");
+        addBtn.setStyle("-fx-background-color: #27AE60; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-padding: 5 15;");
+        addBtn.setOnAction(e -> addFoodToSelectedList(food, quantitySpinner.getValue()));
+
+        box.getChildren().addAll(name, price, quantitySpinner, addBtn);
+        return box;
+    }
+    
+    private void addFoodToSelectedList(Food food, int quantity) {
+        // Cập nhật số lượng trong map, nếu đã có thì cộng dồn
+        selectedItemsToAdd.put(food, selectedItemsToAdd.getOrDefault(food, 0) + quantity);
+        updateSelectedItemsList();
+    }
+    
+    private void removeFoodFromSelectedList(Food food) {
+        selectedItemsToAdd.remove(food);
+        updateSelectedItemsList();
+    }
+    
+    private void updateSelectedItemsList() {
+        selectedItemsList.getChildren().clear();
+        
+        if (selectedItemsToAdd.isEmpty()) {
+            selectedItemsContainer.setVisible(false);
+            selectedItemsContainer.setManaged(false);
+            return;
+        }
+        
+        selectedItemsContainer.setVisible(true);
+        selectedItemsContainer.setManaged(true);
+        
+        for (java.util.Map.Entry<Food, Integer> entry : selectedItemsToAdd.entrySet()) {
+            Food food = entry.getKey();
+            Integer quantity = entry.getValue();
+            double itemTotal = food.getPrice() * quantity;
+            
+            HBox itemBox = new HBox(10);
+            itemBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            itemBox.setStyle("-fx-padding: 8; -fx-background-color: #ffffff; -fx-background-radius: 5;");
+            itemBox.setPrefWidth(400);
+            
+            Label itemName = new Label(food.getFoodName() + " x" + quantity);
+            itemName.setStyle("-fx-font-size: 13px;");
+            itemName.setPrefWidth(200);
+            
+            Label itemPrice = new Label(String.format("%,.0f VND", itemTotal));
+            itemPrice.setStyle("-fx-font-size: 13px; -fx-text-fill: #E67E22; -fx-font-weight: bold;");
+            itemPrice.setPrefWidth(120);
+            
+            Button removeBtn = new Button("X");
+            removeBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 15; -fx-padding: 2 8;");
+            removeBtn.setOnAction(e -> removeFoodFromSelectedList(food));
+            
+            HBox.setHgrow(itemName, javafx.scene.layout.Priority.ALWAYS);
+            itemBox.getChildren().addAll(itemName, itemPrice, removeBtn);
+            selectedItemsList.getChildren().add(itemBox);
+        }
+    }
+    
+    @FXML
+    private void handleAddItems() {
+        if (selectedItemsToAdd.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Cảnh báo");
+            alert.setHeaderText(null);
+            alert.setContentText("Vui lòng chọn ít nhất một món để thêm!");
+            alert.showAndWait();
+            return;
+        }
+        
+        try {
+            Connection conn = ConnectDB.getConnection();
+            conn.setAutoCommit(false);
+            
+            try {
+                // Thêm các món mới vào order detail
+                double additionalAmount = 0.0;
+                for (java.util.Map.Entry<Food, Integer> entry : selectedItemsToAdd.entrySet()) {
+                    Food food = entry.getKey();
+                    Integer quantity = entry.getValue();
+                    
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setOrderId(currentOrder.getOrderId());
+                    orderDetail.setMonId(food.getFoodId());
+                    orderDetail.setSoLuong(quantity);
+                    orderDetail.setDonGia(food.getPrice());
+                    orderDetail.setThanhTien(food.getPrice() * quantity);
+                    
+                    orderDetailRepo.createOrderDetail(orderDetail);
+                    additionalAmount += orderDetail.getThanhTien();
+                }
+                
+                // Cập nhật tổng tiền của order
+                double newTotal = currentOrder.getTongTien() + additionalAmount;
+                orderRepo.updateOrderTotal(currentOrder.getOrderId(), newTotal);
+                
+                conn.commit();
+                
+                // Reload order details
+                orderDetails = orderDetailRepo.findByOrderId(currentOrder.getOrderId());
+                currentOrder = orderRepo.findActiveOrderByTableId(currentTable.getTableId());
+                
+                // Refresh display
+                displayInvoiceDetails();
+                
+                // Clear selected items
+                selectedItemsToAdd.clear();
+                updateSelectedItemsList();
+                
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Đã thêm món vào đơn hàng thành công!");
+                alert.showAndWait();
+                
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Có lỗi xảy ra khi thêm món: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+    
+    @FXML
+    private void handleCancelAddItems() {
+        selectedItemsToAdd.clear();
+        updateSelectedItemsList();
     }
 
     private void displayInvoiceDetails() {
@@ -285,11 +473,14 @@ public class PaymentController implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thành công");
                 alert.setHeaderText(null);
-                alert.setContentText("Thanh toán thành công! Hóa đơn đã được in.");
+                alert.setContentText("Thanh toán thành công! Hóa đơn đã được in. Trạng thái bàn đã chuyển sang 'Trống'.");
                 alert.showAndWait();
 
                 // Close window
                 closeWindow();
+                
+                // Refresh dashboard to update table status
+                refreshDashboard();
 
             } catch (SQLException e) {
                 conn.rollback();
@@ -323,6 +514,61 @@ public class PaymentController implements Initializable {
     private void closeWindow() {
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();
+    }
+    
+    private void refreshDashboard() {
+        try {
+            // Tìm dashboard window thông qua owner
+            Stage currentStage = (Stage) btnClose.getScene().getWindow();
+            Stage dashboardStage = null;
+            
+            // Kiểm tra owner
+            javafx.stage.Window owner = currentStage.getOwner();
+            if (owner instanceof Stage) {
+                dashboardStage = (Stage) owner;
+            }
+            
+            if (dashboardStage == null) {
+                // Tìm dashboard window trong tất cả các stage đang mở
+                for (javafx.stage.Window window : javafx.stage.Window.getWindows()) {
+                    if (window instanceof Stage stage) {
+                        if (stage.getTitle() != null && stage.getTitle().contains("Dashboard")) {
+                            dashboardStage = stage;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (dashboardStage != null && dashboardStage.getScene() != null) {
+                Scene scene = dashboardStage.getScene();
+                Parent root = scene.getRoot();
+                
+                // Tìm DashBoardController và refresh
+                Object controller = root.getUserData();
+                if (controller instanceof DashBoardController) {
+                    ((DashBoardController) controller).refreshTableList();
+                } else {
+                    // Reload dashboard view
+                    reloadDashboardView(dashboardStage);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void reloadDashboardView(Stage dashboardStage) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/com/example/restaurant_management/View/dashboard-view.fxml")
+            );
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            dashboardStage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 
