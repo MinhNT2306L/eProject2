@@ -1,6 +1,6 @@
 package com.example.restaurant_management.service;
 
-import com.example.restaurant_management.Controller.ManagerController;
+import com.example.restaurant_management.Controller.Manager.ManagerController;
 import com.example.restaurant_management.Controller.OrderSummaryController;
 import com.example.restaurant_management.entity.Table;
 import com.example.restaurant_management.entityRepo.TableRepo;
@@ -128,7 +128,7 @@ public class TableService {
         tableList.getChildren().clear();
 
         // Gắn stylesheet nếu chưa có
-        URL stylesheetUrl = TableService.class.getResource("/styles/tables.css");
+        URL stylesheetUrl = TableService.class.getResource("../../../src/main/resources/com/example/restaurant_management/CSS/table.css");
         if (stylesheetUrl != null && tableList.getStylesheets().stream().noneMatch(s -> s.equals(stylesheetUrl.toExternalForm()))) {
             tableList.getStylesheets().add(stylesheetUrl.toExternalForm());
         }
@@ -163,7 +163,7 @@ public class TableService {
             card.getChildren().addAll(lblSoBan, lblTrangThai, actions);
 
             Platform.runLater(() ->
-                    card.prefWidthProperty().bind(tableList.widthProperty().subtract(80).divide(3))
+                    card.prefWidthProperty().bind(tableList.widthProperty().subtract(85).divide(3))
             );
 
             tableList.getChildren().add(card);

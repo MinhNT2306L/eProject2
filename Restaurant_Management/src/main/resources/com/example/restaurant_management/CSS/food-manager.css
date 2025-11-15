@@ -1,0 +1,268 @@
+/* ===========================
+   GLOBAL STYLES
+=========================== */
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+    -fx-background-color: #F5F5F5;
+}
+
+.content-view {
+    -fx-padding: 0;
+}
+
+/* ===========================
+   PAGE TITLE
+=========================== */
+.page-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+}
+
+/* ===========================
+   TOOLBAR (Search & Add)
+=========================== */
+.text-field {
+    -fx-background-color: white;
+    -fx-border-color: #d0d0d0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #aaaaaa;
+}
+
+.text-field:focused {
+    -fx-border-color: #FF914D;
+    -fx-effect: dropshadow(gaussian, rgba(255,145,77,0.4), 8, 0, 0, 0);
+}
+
+.action-button {
+    -fx-background-color: linear-gradient(to right, #FF914D, #FF5E62);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.action-button:hover {
+    -fx-background-color: linear-gradient(to right, #FF5E62, #FF914D);
+}
+
+.add-button {
+    -fx-background-color: #27AE60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.add-button:hover {
+    -fx-background-color: #229954;
+}
+
+/* ===========================
+   TABLE STYLES
+=========================== */
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);
+}
+
+.table-view .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #f0f0f0, #dcdcdc);
+    -fx-background-radius: 10 10 0 0;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+}
+
+.table-row-cell {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2C3E50;
+    -fx-padding: 5 10 5 10;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #FAFAFA;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: rgba(255, 145, 77, 0.1);
+}
+
+.table-row-cell:selected {
+    -fx-background-color: rgba(255, 145, 77, 0.3);
+    -fx-text-fill: #2C3E50;
+}
+
+.table-row-cell:selected:hover {
+    -fx-background-color: rgba(255, 145, 77, 0.4);
+    -fx-text-fill: #2C3E50;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #2C3E50;
+}
+
+.table-row-cell:selected:hover .text {
+    -fx-fill: #2C3E50;
+}
+
+.table-row-cell .table-cell {
+    -fx-text-fill: #2C3E50;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: #2C3E50;
+}
+
+.table-row-cell:selected:hover .table-cell {
+    -fx-text-fill: #2C3E50;
+}
+
+.table-row-cell:hover .table-cell {
+    -fx-text-fill: #2C3E50;
+}
+
+/* ===========================
+   PAGINATION
+=========================== */
+.pagination {
+    -fx-alignment: center;
+}
+
+.pagination .control-box {
+    -fx-spacing: 5;
+}
+
+.pagination .button {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-text-fill: #333333;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.pagination .button:hover {
+    -fx-background-color: #FF914D;
+    -fx-text-fill: white;
+}
+
+.pagination .label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2C3E50;
+}
+
+/* ===========================
+   ACTION BUTTONS (Edit/Delete)
+=========================== */
+.action-cell HBox {
+    -fx-spacing: 6;
+    -fx-alignment: center;
+}
+
+.edit-btn {
+    -fx-background-color: #3498DB;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.edit-btn:hover {
+    -fx-background-color: #2980B9;
+}
+
+.delete-btn {
+    -fx-background-color: #E74C3C;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.delete-btn:hover {
+    -fx-background-color: #C0392B;
+}
+
+/* ===========================
+   STATUS LABELS
+=========================== */
+.status-available {
+    -fx-text-fill: #27AE60;
+    -fx-font-weight: bold;
+}
+.status-unavailable {
+    -fx-text-fill: #C0392B;
+    -fx-font-weight: bold;
+}
+
+/* ===========================
+   MODAL STYLES
+=========================== */
+.modal-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.6);
+    -fx-alignment: center;
+}
+
+.modal-content {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 20, 0, 0, 5);
+    -fx-pref-width: 420px;
+    -fx-max-width: 420px;
+    -fx-min-width: 420px;
+}
+
+.modal-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+    -fx-padding: 0 0 10 0;
+}
+
+.cancel-btn {
+    -fx-background-color: #95A5A6;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 8 20 8 20;
+    -fx-effect: dropshadow(gaussian, rgba(149,165,166,0.3), 5, 0, 0, 2);
+}
+
+.cancel-btn:hover {
+    -fx-background-color: #7F8C8D;
+    -fx-effect: dropshadow(gaussian, rgba(149,165,166,0.5), 8, 0, 0, 3);
+}
+
+.save-btn {
+    -fx-background-color: #27AE60;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 8 20 8 20;
+    -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);
+}
+
+.save-btn:hover {
+    -fx-background-color: #229954;
+    -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.5), 8, 0, 0, 3);
+}

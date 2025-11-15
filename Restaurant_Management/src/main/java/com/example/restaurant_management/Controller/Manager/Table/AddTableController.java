@@ -1,4 +1,4 @@
-package com.example.restaurant_management.Controller;
+package com.example.restaurant_management.Controller.Manager.Table;
 
 import com.example.restaurant_management.entity.Table;
 import com.example.restaurant_management.entityRepo.TableRepo;
