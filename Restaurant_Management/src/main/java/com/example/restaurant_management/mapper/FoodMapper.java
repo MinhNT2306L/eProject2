@@ -11,6 +11,7 @@ public class FoodMapper implements RowMapper<Food>{
                 rs.getString("ten_mon"),
                 rs.getString("loai_mon"),
                 rs.getDouble("gia"),
+                rs.getString("trang_thai"),
                 rs.getString("mo_ta")
         );
     }

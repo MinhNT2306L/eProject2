@@ -12,4 +12,10 @@ module com.example.restaurant_management {
 
     exports com.example.restaurant_management;
     exports com.example.restaurant_management.Controller;
+    exports com.example.restaurant_management.Controller.Manager;
+    opens com.example.restaurant_management.Controller.Manager to javafx.fxml;
+    exports com.example.restaurant_management.Controller.Manager.Food;
+    opens com.example.restaurant_management.Controller.Manager.Food to javafx.fxml;
+    exports com.example.restaurant_management.Controller.Manager.Table;
+    opens com.example.restaurant_management.Controller.Manager.Table to javafx.fxml;
 }
