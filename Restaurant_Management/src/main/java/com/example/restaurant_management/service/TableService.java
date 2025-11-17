@@ -96,13 +96,6 @@ public class TableService {
                         Stage stage = new Stage();
                         stage.setTitle("Thanh toán - Bàn " + table.getTableNumber());
                         stage.setScene(new Scene(root));
-                        
-                        // Set owner để có thể refresh dashboard sau khi đóng
-                        Stage dashboardStage = findDashboardStage();
-                        if (dashboardStage != null) {
-                            stage.initOwner(dashboardStage);
-                        }
-                        
                         stage.show();
                     } else {
                         // No active order - open order screen
@@ -117,13 +110,6 @@ public class TableService {
                         Stage stage = new Stage();
                         stage.setTitle("Order - Bàn " + table.getTableNumber());
                         stage.setScene(new Scene(root));
-                        
-                        // Set owner để có thể refresh dashboard sau khi đóng
-                        Stage dashboardStage = findDashboardStage();
-                        if (dashboardStage != null) {
-                            stage.initOwner(dashboardStage);
-                        }
-                        
                         stage.show();
                     }
 
@@ -219,17 +205,5 @@ public class TableService {
         } else {
             System.err.println(" Root không phải là BorderPane, không thể mở modal edit!");
         }
-    }
-    
-    private static Stage findDashboardStage() {
-        for (javafx.stage.Window window : javafx.stage.Window.getWindows()) {
-            if (window instanceof Stage) {
-                Stage stage = (Stage) window;
-                if (stage.getTitle() != null && stage.getTitle().contains("Dashboard")) {
-                    return stage;
-                }
-            }
-        }
-        return null;
     }
 }

@@ -15,11 +15,7 @@ public class InvoiceRepo {
     private final InvoiceMapper mapper;
 
     public InvoiceRepo() {
-        try {
-            this.conn = ConnectDB.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException("Không thể kết nối đến database: " + e.getMessage(), e);
-        }
+        this.conn = ConnectDB.getConnection();
         this.mapper = new InvoiceMapper();
     }
 

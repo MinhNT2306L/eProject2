@@ -22,55 +22,25 @@
     </top>
 
     <center>
-        <SplitPane dividerPositions="0.5" style="-fx-background-color: #ffffff;">
-            <!-- Left side: Order details -->
-            <ScrollPane fitToWidth="true" style="-fx-background-color: #ffffff;">
-                <VBox fx:id="invoiceDetailsContainer" spacing="10" style="-fx-background-color: #ffffff;">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
-                    
-                    <Label text="CHI TIẾT ĐƠN HÀNG" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;"/>
-                    
-                    <!-- Header row -->
-                    <HBox spacing="10" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
-                        <Label text="Tên món" style="-fx-font-weight: bold; -fx-pref-width: 200;"/>
-                        <Label text="Số lượng" style="-fx-font-weight: bold; -fx-pref-width: 80; -fx-alignment: center;"/>
-                        <Label text="Đơn giá" style="-fx-font-weight: bold; -fx-pref-width: 120; -fx-alignment: center-right;"/>
-                        <Label text="Thành tiền" style="-fx-font-weight: bold; -fx-pref-width: 120; -fx-alignment: center-right;"/>
-                    </HBox>
-                    
-                    <Separator/>
-                    
-                    <!-- Order items will be added here dynamically -->
-                </VBox>
-            </ScrollPane>
-            
-            <!-- Right side: Add more items -->
-            <VBox spacing="15" style="-fx-background-color: #f8f8f8; -fx-padding: 20;">
-                <Label text="GỌI THÊM MÓN" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;"/>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: #ffffff;">
+            <VBox fx:id="invoiceDetailsContainer" spacing="10" style="-fx-background-color: #ffffff;">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
                 
-                <ScrollPane fitToWidth="true" prefHeight="400" style="-fx-background-color: transparent;">
-                    <FlowPane fx:id="menuContainer" hgap="10" vgap="10" style="-fx-background-color: transparent;"/>
-                </ScrollPane>
+                <!-- Header row -->
+                <HBox spacing="10" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+                    <Label text="Tên món" style="-fx-font-weight: bold; -fx-pref-width: 200;"/>
+                    <Label text="Số lượng" style="-fx-font-weight: bold; -fx-pref-width: 80; -fx-alignment: center;"/>
+                    <Label text="Đơn giá" style="-fx-font-weight: bold; -fx-pref-width: 120; -fx-alignment: center-right;"/>
+                    <Label text="Thành tiền" style="-fx-font-weight: bold; -fx-pref-width: 120; -fx-alignment: center-right;"/>
+                </HBox>
                 
                 <Separator/>
                 
-                <VBox fx:id="selectedItemsContainer" spacing="8" visible="false" managed="false">
-                    <Label text="Món đã chọn:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                    <VBox fx:id="selectedItemsList" spacing="5"/>
-                </VBox>
-                
-                <HBox alignment="CENTER_RIGHT" spacing="10">
-                    <Button text="Thêm món" fx:id="btnAddItems" 
-                            style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8; -fx-font-weight: bold;"
-                            onAction="#handleAddItems"/>
-                    <Button text="Hủy" fx:id="btnCancelAdd" 
-                            style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8;"
-                            onAction="#handleCancelAddItems"/>
-                </HBox>
+                <!-- Order items will be added here dynamically -->
             </VBox>
-        </SplitPane>
+        </ScrollPane>
     </center>
 
     <bottom>

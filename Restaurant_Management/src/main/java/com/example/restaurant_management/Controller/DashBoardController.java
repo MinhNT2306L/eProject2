@@ -8,7 +8,6 @@ import com.example.restaurant_management.service.TableService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
@@ -22,19 +21,8 @@ public class DashBoardController {
 
     @FXML
     public void initialize(){
-        refreshTableList();
-        // Lưu controller vào userData sau khi scene đã được set
-        javafx.application.Platform.runLater(() -> {
-            if (tableContainer != null && tableContainer.getScene() != null) {
-                Parent root = tableContainer.getScene().getRoot();
-                root.setUserData(this);
-            }
-        });
-    }
-    
-    public void refreshTableList() {
         List<Table> tables = tableRepo.getAll();
-        TableService.updateTableList(tableContainer, tables);
+        TableService.updateTableList(tableContainer,tables);
     }
 
 

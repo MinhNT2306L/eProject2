@@ -31,24 +31,11 @@ public class LoginController {
 
     @FXML
     public void login(ActionEvent event) {
-        // Xóa thông báo lỗi cũ
-        errorLabel.setVisible(false);
-        errorLabel.setText("");
-        
-        String username = usernameField.getText().trim();
+        String username = usernameField.getText();
         String password = passwordField.getText();
-        
-        // Validation
-        if (username.isEmpty() || password.isEmpty()) {
-            errorLabel.setVisible(true);
-            errorLabel.setText("Vui lòng nhập đầy đủ thông tin đăng nhập.");
-            return;
-        }
-        
-        String role = LoginService.verifyLogin(username, password);
-        
+        String role = LoginService.verifyLogin(username,password);
+        // fix
         if (role.equals("Manager")) {
-            // Chuyển đến màn hình quản lý cho Manager
             try {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/com/example/restaurant_management/View/manager-view.fxml")
@@ -59,7 +46,6 @@ public class LoginController {
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(scene);
-                stage.setResizable(true); // Cho phép resize màn hình manager
                 stage.setMaximized(true);
                 stage.setTitle("LOCAL FOOD - Quản lý");
                 stage.show();
@@ -67,10 +53,9 @@ public class LoginController {
             } catch (Exception e) {
                 e.printStackTrace();
                 errorLabel.setVisible(true);
-                errorLabel.setText("Không thể mở giao diện quản lý. Vui lòng thử lại.");
+                errorLabel.setText("Không thể mở giao diện đặt bàn.");
             }
-        } else if (role.equals("Nhân viên")) {
-            // Chuyển đến màn hình dashboard cho Nhân viên
+        } else if (role.equals("Nhân viên")){
             try {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/com/example/restaurant_management/View/dashboard-view.fxml")
@@ -81,21 +66,17 @@ public class LoginController {
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(scene);
-                stage.setResizable(true); // Cho phép resize màn hình dashboard
                 stage.setMaximized(true);
                 stage.setTitle("LOCAL FOOD - Dashboard");
                 stage.show();
             } catch (IOException e) {
-                e.printStackTrace();
                 errorLabel.setVisible(true);
-                errorLabel.setText("Không thể mở giao diện dashboard. Vui lòng thử lại.");
+                errorLabel.setText("Không thể mở giao diện đặt bàn.");
+                throw new RuntimeException(e);
             }
         } else {
-            // Đăng nhập thất bại
             errorLabel.setVisible(true);
             errorLabel.setText("Sai thông tin đăng nhập, vui lòng thử lại.");
-            // Xóa password field
-            passwordField.clear();
         }
     }
 }
