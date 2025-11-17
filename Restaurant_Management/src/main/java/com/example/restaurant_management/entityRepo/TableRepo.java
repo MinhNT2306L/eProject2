@@ -70,4 +70,19 @@ public class TableRepo extends EntityRepo<Table> {
         }
     }
 
+    public Table findById(int banId) {
+        String sql = "SELECT * FROM ban WHERE ban_id = ?";
+        try (PreparedStatement ps = this.getConn().prepareStatement(sql)) {
+            ps.setInt(1, banId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return this.getMapper().mapRow(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
 }
