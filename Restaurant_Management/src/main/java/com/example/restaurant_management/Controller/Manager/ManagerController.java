@@ -1,5 +1,8 @@
 package com.example.restaurant_management.Controller.Manager;
 
+import com.example.restaurant_management.Controller.AddEmployeeController;
+import com.example.restaurant_management.Controller.AddIngredientController;
+import com.example.restaurant_management.Controller.IngredientController;
 import com.example.restaurant_management.Controller.Manager.Table.AddTableController;
 import com.example.restaurant_management.Controller.Manager.Table.EditTableController;
 import com.example.restaurant_management.entity.Employee;
@@ -38,6 +41,7 @@ public class ManagerController {
     @FXML private VBox customerView;
     @FXML private VBox reportView;
     @FXML private VBox menuManagementView;
+    @FXML private VBox ingredientView;
 
     // === CÁC MODAL & COMPONENT ===
     @FXML private BorderPane rootPane;
@@ -460,6 +464,233 @@ public class ManagerController {
         setVisibleAndManaged(customerView, false);
         setVisibleAndManaged(reportView, false);
         setVisibleAndManaged(menuManagementView, false);
+        setVisibleAndManaged(ingredientView, false);
+    }
+
+    // === HIỂN THỊ EMPLOYEE MANAGER ===
+    @FXML
+    public void showEmployeeManager(ActionEvent event) {
+        hideAllViews();
+        if (customerView == null) return;
+
+        try {
+            customerView.getChildren().clear();
+
+            // Tạo UI cho quản lý nhân viên
+            VBox employeeView = new VBox(20);
+            employeeView.setPadding(new Insets(30));
+            employeeView.setStyle("-fx-background-color: #F5F5F5;");
+
+            HBox headerBox = new HBox(15);
+            headerBox.setAlignment(Pos.CENTER_LEFT);
+            Label titleLabel = new Label("Quản lý Nhân Viên");
+            titleLabel.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;");
+            Button addBtn = new Button("Thêm Nhân Viên");
+            addBtn.setStyle("-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 6;");
+            addBtn.setOnAction(e -> showAddEmployeeModal());
+            headerBox.getChildren().addAll(titleLabel, addBtn);
+
+            VBox employeeListContainer = new VBox(10);
+            employeeListContainer.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);");
+            refreshEmployeeList(employeeListContainer);
+
+            employeeView.getChildren().addAll(headerBox, employeeListContainer);
+            customerView.getChildren().add(employeeView);
+
+            customerView.setVisible(true);
+            customerView.setManaged(true);
+            customerView.toFront();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Không thể tải giao diện quản lý nhân viên!");
+        }
+    }
+
+    // === REFRESH DANH SÁCH NHÂN VIÊN ===
+    private void refreshEmployeeList(VBox container) {
+        container.getChildren().clear();
+        try {
+            List<Employee> employees = employeeRepo.getAll();
+            if (employees.isEmpty()) {
+                Label emptyLabel = new Label("Chưa có nhân viên nào");
+                emptyLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: gray;");
+                container.getChildren().add(emptyLabel);
+                return;
+            }
+
+            // Header
+            HBox headerRow = new HBox(10);
+            headerRow.setPadding(new Insets(10));
+            headerRow.setStyle("-fx-background-color: #34495E; -fx-background-radius: 5 5 0 0;");
+            Label idHeader = createHeaderLabel("ID");
+            Label usernameHeader = createHeaderLabel("Username");
+            Label nameHeader = createHeaderLabel("Họ Tên");
+            Label phoneHeader = createHeaderLabel("SĐT");
+            Label emailHeader = createHeaderLabel("Email");
+            Label roleHeader = createHeaderLabel("Vai Trò");
+            Label actionHeader = createHeaderLabel("Thao Tác");
+            headerRow.getChildren().addAll(idHeader, usernameHeader, nameHeader, phoneHeader, emailHeader, roleHeader, actionHeader);
+            container.getChildren().add(headerRow);
+
+            // Employee rows
+            for (Employee emp : employees) {
+                HBox row = new HBox(10);
+                row.setPadding(new Insets(12));
+                row.setStyle("-fx-background-color: white; -fx-border-color: #E0E0E0; -fx-border-width: 0 0 1 0;");
+                row.setAlignment(Pos.CENTER_LEFT);
+
+                Label idLabel = new Label(String.valueOf(emp.getNvId()));
+                idLabel.setPrefWidth(50);
+                Label usernameLabel = new Label(emp.getUsername());
+                usernameLabel.setPrefWidth(120);
+                Label nameLabel = new Label(emp.getFullName() != null ? emp.getFullName() : "N/A");
+                nameLabel.setPrefWidth(150);
+                Label phoneLabel = new Label(emp.getPhone() != null ? emp.getPhone() : "N/A");
+                phoneLabel.setPrefWidth(120);
+                Label emailLabel = new Label(emp.getEmail() != null ? emp.getEmail() : "N/A");
+                emailLabel.setPrefWidth(180);
+                Label roleLabel = new Label(emp.getRoleId() != null && emp.getRoleId() == 1 ? "Manager" : "Nhân viên");
+                roleLabel.setPrefWidth(100);
+
+                HBox actionBox = new HBox(5);
+                Button editBtn = new Button("Sửa");
+                editBtn.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 3;");
+                editBtn.setOnAction(e -> showEditEmployeeModal(emp));
+                Button deleteBtn = new Button("Xóa");
+                deleteBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 3;");
+                deleteBtn.setOnAction(e -> deleteEmployee(emp));
+                actionBox.getChildren().addAll(editBtn, deleteBtn);
+                actionBox.setPrefWidth(120);
+
+                row.getChildren().addAll(idLabel, usernameLabel, nameLabel, phoneLabel, emailLabel, roleLabel, actionBox);
+                container.getChildren().add(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Label errorLabel = new Label("Lỗi khi tải danh sách nhân viên: " + e.getMessage());
+            errorLabel.setStyle("-fx-text-fill: red;");
+            container.getChildren().add(errorLabel);
+        }
+    }
+
+    // === HIỂN THỊ INGREDIENT MANAGER ===
+    @FXML
+    public void showIngredientManager(ActionEvent event) {
+        hideAllViews();
+        if (ingredientView == null) return;
+
+        try {
+            ingredientView.getChildren().clear();
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/restaurant_management/View/ingredient-view.fxml")
+            );
+            VBox ingredientViewContent = loader.load();
+            IngredientController ingredientController = loader.getController();
+
+            // Setup modal cho ingredient
+            FXMLLoader modalLoader = new FXMLLoader(
+                    getClass().getResource("/com/example/restaurant_management/View/add-ingredient-view.fxml")
+            );
+            StackPane addIngredientModal = modalLoader.load();
+            AddIngredientController addController = modalLoader.getController();
+            addIngredientModal.setVisible(false);
+            addIngredientModal.setMouseTransparent(true);
+
+            ingredientController.setModal(addIngredientModal, addController);
+            contentArea.getChildren().add(addIngredientModal);
+
+            VBox.setVgrow(ingredientViewContent, Priority.ALWAYS);
+            HBox.setHgrow(ingredientViewContent, Priority.ALWAYS);
+            ingredientViewContent.setMaxWidth(Double.MAX_VALUE);
+            ingredientViewContent.setMaxHeight(Double.MAX_VALUE);
+
+            ingredientView.getChildren().add(ingredientViewContent);
+            ingredientView.setVisible(true);
+            ingredientView.setManaged(true);
+            ingredientView.toFront();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Không thể tải giao diện quản lý nguyên liệu!");
+        }
+    }
+
+    // === MODAL NHÂN VIÊN ===
+    private void showAddEmployeeModal() {
+        try {
+            StackPane modal = new StackPane();
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/restaurant_management/View/add-employee-view.fxml")
+            );
+            VBox modalContent = loader.load();
+            AddEmployeeController controller = loader.getController();
+            controller.setOnEmployeeAdded(() -> {
+                VBox container = (VBox) customerView.getChildren().get(0);
+                VBox listContainer = (VBox) container.getChildren().get(1);
+                refreshEmployeeList(listContainer);
+            });
+            modal.getChildren().add(modalContent);
+            modal.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
+            contentArea.getChildren().add(modal);
+            modal.setVisible(true);
+            modal.setMouseTransparent(false);
+            modal.toFront();
+            controller.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Không thể tải form thêm nhân viên!");
+        }
+    }
+
+    private void showEditEmployeeModal(Employee employee) {
+        try {
+            StackPane modal = new StackPane();
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/restaurant_management/View/add-employee-view.fxml")
+            );
+            VBox modalContent = loader.load();
+            AddEmployeeController controller = loader.getController();
+            controller.setEmployee(employee);
+            controller.setOnEmployeeAdded(() -> {
+                VBox container = (VBox) customerView.getChildren().get(0);
+                VBox listContainer = (VBox) container.getChildren().get(1);
+                refreshEmployeeList(listContainer);
+            });
+            modal.getChildren().add(modalContent);
+            modal.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
+            contentArea.getChildren().add(modal);
+            modal.setVisible(true);
+            modal.setMouseTransparent(false);
+            modal.toFront();
+            controller.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Không thể tải form sửa nhân viên!");
+        }
+    }
+
+    private void deleteEmployee(Employee employee) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Xác nhận xóa");
+        confirm.setHeaderText(null);
+        confirm.setContentText("Bạn có chắc muốn xóa nhân viên \"" + employee.getFullName() + "\"?");
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                boolean success = employeeRepo.delete(employee.getNvId());
+                Alert alert = new Alert(success ? Alert.AlertType.INFORMATION : Alert.AlertType.ERROR);
+                alert.setTitle(success ? "Thành công" : "Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText(success ? "Đã xóa nhân viên thành công!" : "Không thể xóa nhân viên.");
+                alert.showAndWait();
+                if (success) {
+                    VBox container = (VBox) customerView.getChildren().get(0);
+                    VBox listContainer = (VBox) container.getChildren().get(1);
+                    refreshEmployeeList(listContainer);
+                }
+            }
+        });
     }
 
     // === HÀM HỖ TRỢ: ẨN/HIỆN NODE AN TOÀN ===

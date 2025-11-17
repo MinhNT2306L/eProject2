@@ -199,4 +199,27 @@ CREATE TABLE `hoadon` (
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- ===============================
+-- Bảng nguyenlieu
+-- ===============================
+DROP TABLE IF EXISTS `nguyenlieu`;
+CREATE TABLE `nguyenlieu` (
+    `nl_id` int NOT NULL AUTO_INCREMENT,
+    `ten_nguyen_lieu` varchar(100) NOT NULL,
+    `so_luong` decimal(10,2) NOT NULL DEFAULT '0.00',
+    `don_vi` enum('kg','g','cai') DEFAULT 'kg',
+    `nha_cung_cap` varchar(100) DEFAULT NULL,
+    `ngay_nhap` date DEFAULT (CURRENT_DATE),
+    `ngay_het_han` date DEFAULT NULL,
+    `trang_thai` enum('CON_HANG','HET_HANG','HET_HAN') DEFAULT 'CON_HANG',
+    PRIMARY KEY (`nl_id`),
+    CONSTRAINT `nguyenlieu_chk_1` CHECK ((`so_luong` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Dữ liệu nguyenlieu mẫu
+INSERT INTO `nguyenlieu` (`ten_nguyen_lieu`, `so_luong`, `don_vi`, `nha_cung_cap`, `ngay_nhap`, `ngay_het_han`, `trang_thai`) VALUES
+('Thịt bò', 50.00, 'kg', 'Công ty Thực phẩm ABC', '2025-01-15', '2025-02-15', 'CON_HANG'),
+('Rau xà lách', 20.00, 'kg', 'Nông trại XYZ', '2025-01-20', '2025-01-25', 'CON_HANG'),
+('Bánh phở', 100.00, 'cai', 'Cơ sở sản xuất DEF', '2025-01-18', '2025-02-18', 'CON_HANG');
+
 

@@ -34,8 +34,8 @@
                     <Button fx:id="tableBtn" onAction="#showTableManager" prefHeight="42.0" prefWidth="246.0" styleClass="menu-button" text="Quản lý Bàn" />
                     <Button fx:id="orderBtn" onAction="#showOrderManager" prefHeight="42.0" prefWidth="279.0" styleClass="menu-button" text="Quản lý Đơn" />
                     <Button fx:id="menuBtn"  onAction="#showFoodManager" prefHeight="42.0" prefWidth="290.0" styleClass="menu-button" text="Quản lý Món" />
-                    <Button fx:id="customerBtn" prefHeight="42.0" prefWidth="276.0" styleClass="menu-button" text="Quản lý Nhân Viên" />
-                    <Button fx:id="dashboardBtn" prefHeight="42.0" prefWidth="312.0" styleClass="menu-button" text="Nhập xuất " />
+                    <Button fx:id="customerBtn" onAction="#showEmployeeManager" prefHeight="42.0" prefWidth="276.0" styleClass="menu-button" text="Quản lý Nhân Viên" />
+                    <Button fx:id="dashboardBtn" onAction="#showIngredientManager" prefHeight="42.0" prefWidth="312.0" styleClass="menu-button" text="Quản lý Nguyên Liệu" />
                     <Button fx:id="reportBtn" prefHeight="42.0" prefWidth="325.0" styleClass="menu-button" text="Báo cáo" />
                 </VBox>
 
@@ -107,6 +107,13 @@
                         </HBox>
                         <VBox fx:id="customerListContainer" spacing="10" styleClass="customer-list-container" />
                     </children>
+                </VBox>
+
+                <!-- Ingredient Management View -->
+                <VBox fx:id="ingredientView" spacing="20" styleClass="content-view" visible="false">
+                    <padding>
+                        <Insets bottom="30" left="30" right="30" top="30" />
+                    </padding>
                 </VBox>
 
                 <!-- Reports View -->
