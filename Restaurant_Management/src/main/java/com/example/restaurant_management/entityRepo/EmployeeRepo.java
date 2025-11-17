@@ -48,5 +48,20 @@ public class EmployeeRepo {
         }
         return null;
     }
+
+    public Employee findById(int nvId) {
+        String sql = "SELECT * FROM nhanvien WHERE nv_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, nvId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapper.mapRow(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
 }
 

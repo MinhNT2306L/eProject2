@@ -189,7 +189,7 @@ public class OrderSummaryController {
                 order.setBanId(currentTable.getTableId());
                 order.setThoiGian(LocalDateTime.now());
                 order.setTongTien(totalPrice);
-                order.setTrangThai("MOI"); // New order
+                order.setTrangThai("DANG_PHUC_VU"); // Order is being prepared/served
 
                 OrderRepo orderRepo = new OrderRepo();
                 int orderId = orderRepo.createOrder(order);

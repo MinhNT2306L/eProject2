@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
@@ -31,7 +32,7 @@
                 <!-- Menu Items -->
                 <VBox spacing="5" styleClass="menu-items">
                     <Button fx:id="tableBtn" onAction="#showTableManager" prefHeight="42.0" prefWidth="246.0" styleClass="menu-button" text="Quản lý Bàn" />
-                    <Button fx:id="orderBtn" prefHeight="42.0" prefWidth="279.0" styleClass="menu-button" text="Quản lý Đơn" />
+                    <Button fx:id="orderBtn" onAction="#showOrderManager" prefHeight="42.0" prefWidth="279.0" styleClass="menu-button" text="Quản lý Đơn" />
                     <Button fx:id="menuBtn"  onAction="#showFoodManager" prefHeight="42.0" prefWidth="290.0" styleClass="menu-button" text="Quản lý Món" />
                     <Button fx:id="customerBtn" prefHeight="42.0" prefWidth="276.0" styleClass="menu-button" text="Quản lý Nhân Viên" />
                     <Button fx:id="dashboardBtn" prefHeight="42.0" prefWidth="312.0" styleClass="menu-button" text="Nhập xuất " />
@@ -72,9 +73,11 @@
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="15">
                             <Label styleClass="page-title" text="Quản lý Đơn Hàng" />
-                            <Button styleClass="add-button" text="Tạo Đơn Mới" />
+                            <Button fx:id="refreshOrderBtn" onAction="#refreshOrderList" styleClass="add-button" text="Làm mới" />
                         </HBox>
-                        <VBox fx:id="orderListContainer" spacing="10" styleClass="order-list-container" />
+                        <ScrollPane fitToWidth="true" styleClass="order-list-container">
+                            <VBox fx:id="orderListContainer" spacing="10" />
+                        </ScrollPane>
                     </children>
                 </VBox>
 
