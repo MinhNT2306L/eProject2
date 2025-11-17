@@ -17,7 +17,11 @@ public class OrderRepo {
     private final OrderMapper mapper;
 
     public OrderRepo() {
-        this.conn = ConnectDB.getConnection();
+        try {
+            this.conn = ConnectDB.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("Không thể kết nối đến database: " + e.getMessage(), e);
+        }
         this.mapper = new OrderMapper();
     }
 

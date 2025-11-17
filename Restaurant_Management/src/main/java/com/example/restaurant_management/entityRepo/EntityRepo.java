@@ -18,7 +18,11 @@ public class EntityRepo<T> {
 
 
     public EntityRepo(RowMapper<T> mapper, String tableName) {
-        this.conn = ConnectDB.getConnection();
+        try {
+            this.conn = ConnectDB.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("Không thể kết nối đến database: " + e.getMessage(), e);
+        }
         this.mapper = mapper;
         this.tableName = tableName;
     }
