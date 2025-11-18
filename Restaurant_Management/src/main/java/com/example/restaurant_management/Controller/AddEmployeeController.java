@@ -185,7 +185,9 @@ public class AddEmployeeController {
     }
 
     public void show() {
-        clearForm();
+        if (currentEmployee == null) {
+            clearForm();
+        }
         // Đảm bảo modal được căn giữa
         modalRoot.setAlignment(javafx.geometry.Pos.CENTER);
         StackPane.setAlignment(modalContainer, javafx.geometry.Pos.CENTER);
