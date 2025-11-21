@@ -7,7 +7,10 @@ import com.example.restaurant_management.mapper.FoodMapper;
 import com.example.restaurant_management.mapper.TableMapper;
 import com.example.restaurant_management.service.BillGenerator;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -41,6 +44,8 @@ public class PaymentController implements Initializable {
     private Button btnPay;
     @FXML
     private Button btnClose;
+    @FXML
+    private Button btnAddMoreItems;
     @FXML
     private Button btnCash;
     @FXML
@@ -318,6 +323,54 @@ public class PaymentController implements Initializable {
     @FXML
     private void handleClose() {
         closeWindow();
+    }
+
+    @FXML
+    private void handleAddMoreItems() {
+        try {
+            // Open OrderSummaryView for adding more items to existing order
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/restaurant_management/View/OrderSummaryView.fxml")
+            );
+            Parent root = loader.load();
+
+            OrderSummaryController controller = loader.getController();
+            // Pass the current order so it can add items to existing order
+            controller.setTableInfo(currentTable);
+            controller.setExistingOrder(currentOrder); // New method to set existing order
+
+            Stage orderStage = new Stage();
+            orderStage.setTitle("Thêm món - Bàn " + currentTable.getTableNumber());
+            orderStage.setScene(new Scene(root));
+            
+            // When order window closes, refresh payment screen
+            orderStage.setOnCloseRequest(e -> refreshOrderDetails());
+            
+            orderStage.showAndWait();
+            
+            // Refresh after window closes
+            refreshOrderDetails();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Không thể mở màn hình thêm món: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    private void refreshOrderDetails() {
+        // Reload order details from database
+        if (currentOrder != null && currentTable != null) {
+            // Refresh current order
+            currentOrder = orderRepo.findActiveOrderByTableId(currentTable.getTableId());
+            if (currentOrder != null) {
+                orderDetails = orderDetailRepo.findByOrderId(currentOrder.getOrderId());
+                displayInvoiceDetails();
+            }
+        }
     }
 
     private void closeWindow() {

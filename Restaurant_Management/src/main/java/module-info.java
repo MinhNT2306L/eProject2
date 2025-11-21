@@ -6,9 +6,12 @@ module com.example.restaurant_management {
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
     requires java.sql;
+    requires com.google.gson;
+    requires jdk.httpserver;
 
     opens com.example.restaurant_management to javafx.fxml;
     opens com.example.restaurant_management.Controller to javafx.fxml;
+    opens com.example.restaurant_management.api to com.google.gson;
 
     exports com.example.restaurant_management;
     exports com.example.restaurant_management.Controller;

@@ -43,11 +43,15 @@ public class OrderSummaryController {
     private VBox orderDetailsContainer;
     @FXML
     private VBox topVBox;
+    
 
     private Table currentTable;
+    private Order existingOrder; // Order to add items to (if adding to existing order)
     private double totalPrice = 0.0;
 
     private Map<Food, Integer> orderedItems = new HashMap<>();
+    private OrderRepo orderRepo = new OrderRepo();
+    private OrderDetailRepo orderDetailRepo = new OrderDetailRepo();
 
     // khi bàn được truyền vào
     public void setTableInfo(Table table) {
@@ -55,6 +59,21 @@ public class OrderSummaryController {
         lblTableInfo.setText("Bàn " + table.getTableNumber() + " - " + table.getStatus());
         topVBox.setStyle("-fx-background-color: #f8f8f8; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;");
         loadMenu();
+    }
+
+    // Set existing order when adding items to existing order
+    public void setExistingOrder(Order order) {
+        this.existingOrder = order;
+        // Don't load existing items - user will only add NEW items
+        // The payment screen already shows existing items
+        orderedItems.clear();
+        updateOrderSummary();
+        // Change button text to indicate adding to existing order
+        if (order != null) {
+            btnPay.setText("Thêm món");
+        } else {
+            btnPay.setText("Gửi bếp");
+        }
     }
 
     private void loadMenu() {
@@ -182,52 +201,109 @@ public class OrderSummaryController {
             conn.setAutoCommit(false); // Start transaction
 
             try {
-                // Create Order
-                Order order = new Order();
-                order.setKhId(null); // Customer ID can be null for walk-in customers
-                order.setNvId(UserSession.getCurrentEmployeeId());
-                order.setBanId(currentTable.getTableId());
-                order.setThoiGian(LocalDateTime.now());
-                order.setTongTien(totalPrice);
-                order.setTrangThai("DANG_PHUC_VU"); // Order is being prepared/served
+                int orderId;
 
-                OrderRepo orderRepo = new OrderRepo();
-                int orderId = orderRepo.createOrder(order);
+                if (existingOrder != null) {
+                    // Adding items to existing order
+                    orderId = existingOrder.getOrderId();
+                    
+                    // Get existing order details to check for duplicates
+                    List<OrderDetail> existingDetails = orderDetailRepo.findByOrderId(orderId);
+                    
+                    // Add new items to existing order
+                    for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
+                        Food food = entry.getKey();
+                        Integer quantity = entry.getValue();
+                        
+                        // Check if this food already exists in order details
+                        boolean foodExists = false;
+                        for (OrderDetail existingDetail : existingDetails) {
+                            if (existingDetail.getMonId().equals(food.getFoodId())) {
+                                // Update existing order detail - add to current quantity
+                                int newQuantity = existingDetail.getSoLuong() + quantity;
+                                existingDetail.setSoLuong(newQuantity);
+                                // thanh_tien is auto-calculated by database
+                                orderDetailRepo.updateOrderDetail(existingDetail);
+                                foodExists = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!foodExists) {
+                            // Create new order detail
+                            OrderDetail orderDetail = new OrderDetail();
+                            orderDetail.setOrderId(orderId);
+                            orderDetail.setMonId(food.getFoodId());
+                            orderDetail.setSoLuong(quantity);
+                            orderDetail.setDonGia(food.getPrice());
+                            orderDetail.setThanhTien(food.getPrice() * quantity);
+                            orderDetailRepo.createOrderDetail(orderDetail);
+                        }
+                    }
+                    
+                    // Recalculate total from database (to get accurate thanh_tien for updated items)
+                    List<OrderDetail> updatedDetails = orderDetailRepo.findByOrderId(orderId);
+                    double finalTotal = 0.0;
+                    for (OrderDetail detail : updatedDetails) {
+                        finalTotal += detail.getThanhTien();
+                    }
+                    
+                    // Update order total
+                    orderRepo.updateOrderTotal(orderId, finalTotal);
+                    
+                    // Show success message
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Thành công");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Đã thêm món vào đơn hàng thành công!");
+                    alert.showAndWait();
+                    
+                } else {
+                    // Create new Order
+                    Order order = new Order();
+                    order.setKhId(null); // Customer ID can be null for walk-in customers
+                    order.setNvId(UserSession.getCurrentEmployeeId());
+                    order.setBanId(currentTable.getTableId());
+                    order.setThoiGian(LocalDateTime.now());
+                    order.setTongTien(totalPrice);
+                    order.setTrangThai("DANG_PHUC_VU"); // Order is being prepared/served
 
-                // Create Order Details
-                OrderDetailRepo orderDetailRepo = new OrderDetailRepo();
-                for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
-                    Food food = entry.getKey();
-                    Integer quantity = entry.getValue();
+                    orderId = orderRepo.createOrder(order);
 
-                    OrderDetail orderDetail = new OrderDetail();
-                    orderDetail.setOrderId(orderId);
-                    orderDetail.setMonId(food.getFoodId());
-                    orderDetail.setSoLuong(quantity);
-                    orderDetail.setDonGia(food.getPrice());
-                    orderDetail.setThanhTien(food.getPrice() * quantity);
+                    // Create Order Details
+                    for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
+                        Food food = entry.getKey();
+                        Integer quantity = entry.getValue();
 
-                    orderDetailRepo.createOrderDetail(orderDetail);
+                        OrderDetail orderDetail = new OrderDetail();
+                        orderDetail.setOrderId(orderId);
+                        orderDetail.setMonId(food.getFoodId());
+                        orderDetail.setSoLuong(quantity);
+                        orderDetail.setDonGia(food.getPrice());
+                        orderDetail.setThanhTien(food.getPrice() * quantity);
+
+                        orderDetailRepo.createOrderDetail(orderDetail);
+                    }
+
+                    // Update table status to PHUC_VU (Serving)
+                    TableRepo tableRepo = new TableRepo(new TableMapper());
+                    tableRepo.updateTableStatus(conn, currentTable.getTableId(), "PHUC_VU");
+
+                    // Show success message
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Thành công");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Đã gửi đơn hàng đến bếp thành công!");
+                    alert.showAndWait();
                 }
 
-                // Update table status to PHUC_VU (Serving)
-                TableRepo tableRepo = new TableRepo(new TableMapper());
-                tableRepo.updateTableStatus(conn, currentTable.getTableId(), "PHUC_VU");
-
                 conn.commit(); // Commit transaction
-
-                // Show success message
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thành công");
-                alert.setHeaderText(null);
-                alert.setContentText("Đã gửi đơn hàng đến bếp thành công!");
-                alert.showAndWait();
 
                 // Clear ordered items and close window
                 orderedItems.clear();
                 updateOrderSummary();
 
-                  // Close the order window and return to dashboard
+                // Close the order window
                 Stage stage = (Stage) btnPay.getScene().getWindow();
                 stage.close();
 
@@ -243,7 +319,7 @@ public class OrderSummaryController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Lỗi");
             alert.setHeaderText(null);
-            alert.setContentText("Có lỗi xảy ra khi tạo đơn hàng: " + e.getMessage());
+            alert.setContentText("Có lỗi xảy ra khi tạo/cập nhật đơn hàng: " + e.getMessage());
             alert.showAndWait();
         }
     }

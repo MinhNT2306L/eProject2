@@ -21,10 +21,18 @@ public class DashBoardController {
 
     @FXML
     public void initialize(){
-        List<Table> tables = tableRepo.getAll();
-        TableService.updateTableList(tableContainer,tables);
+        refreshTables();
     }
 
+    @FXML
+    public void refreshTables(ActionEvent event){
+        refreshTables();
+    }
+
+    private void refreshTables(){
+        List<Table> tables = tableRepo.getAll();
+        TableService.updateTableList(tableContainer, tables);
+    }
 
     @FXML
     public void logout(ActionEvent event){

@@ -57,7 +57,10 @@
                     <Insets bottom="20" left="30" right="30" top="30" />
                 </padding>
                 <children>
-                    <Label styleClass="page-title" text="Danh sách bàn" />
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Label styleClass="page-title" text="Danh sách bàn" />
+                        <Button fx:id="refreshTableBtn" onAction="#refreshTables" styleClass="add-button" text="Làm mới" />
+                    </HBox>
                     <FlowPane fx:id="tableContainer" hgap="15" styleClass="table-grid" vgap="15" />
                 </children>
             </VBox>

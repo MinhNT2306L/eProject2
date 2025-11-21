@@ -16,22 +16,37 @@ import java.util.List;
 
 public class FoodManagerController {
 
-    @FXML private TableView<Food> tblFoods;
-    @FXML private TableColumn<Food, Integer> colId;
-    @FXML private TableColumn<Food, String> colName;
-    @FXML private TableColumn<Food, String> colType;
-    @FXML private TableColumn<Food, Double> colPrice;
-    @FXML private TableColumn<Food, String> colStatus;
-    @FXML private TableColumn<Food, Void> colActions;
-    @FXML private Pagination pagination;
-    @FXML private TextField txtSearch;
-    @FXML private Button btnAdd;
-    @FXML private Button btnSearch;
+    @FXML
+    private TableView<Food> tblFoods;
+    @FXML
+    private TableColumn<Food, Integer> colId;
+    @FXML
+    private TableColumn<Food, String> colName;
+    @FXML
+    private TableColumn<Food, String> colType;
+    @FXML
+    private TableColumn<Food, Double> colPrice;
+    @FXML
+    private TableColumn<Food, String> colStatus;
+    @FXML
+    private TableColumn<Food, Void> colActions;
+    @FXML
+    private Pagination pagination;
+    @FXML
+    private TextField txtSearch;
+    @FXML
+    private Button btnAdd;
+    @FXML
+    private Button btnSearch;
 
-    @FXML private StackPane addFoodModal;
-    @FXML private AddFoodController addFoodModalController;
-    @FXML private StackPane editFoodModal;
-    @FXML private EditFoodController editFoodModalController;
+    @FXML
+    private StackPane addFoodModal;
+    @FXML
+    private AddFoodController addFoodModalController;
+    @FXML
+    private StackPane editFoodModal;
+    @FXML
+    private EditFoodController editFoodModalController;
 
     private final int ROWS_PER_PAGE = 15;
     private List<Food> allFoods;
@@ -45,44 +60,44 @@ public class FoodManagerController {
         loadFoodsFromDatabase();
         hideModals();
     }
-    
+
     private void setupPagination() {
         // Lắng nghe sự kiện thay đổi trang và cập nhật TableView
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
             updateTableForPage(newIndex.intValue());
         });
-        
+
         // Không sử dụng page factory vì TableView đã có trong FXML
         pagination.setPageFactory(null);
     }
-    
+
     private void updateTableForPage(int pageIndex) {
         if (allFoods == null || allFoods.isEmpty()) {
             tblFoods.setItems(FXCollections.observableArrayList());
             refreshTableView();
             return;
         }
-        
+
         int from = pageIndex * ROWS_PER_PAGE;
         int to = Math.min(from + ROWS_PER_PAGE, allFoods.size());
-        
+
         if (from < allFoods.size()) {
             ObservableList<Food> pageData = FXCollections.observableArrayList(
-                allFoods.subList(from, to)
-            );
+                    allFoods.subList(from, to));
             tblFoods.setItems(pageData);
         } else {
             tblFoods.setItems(FXCollections.observableArrayList());
         }
-        
+
         // Refresh TableView để đảm bảo các cell được render lại đúng cách
         refreshTableView();
     }
-    
+
     private void refreshTableView() {
         // Force refresh TableView để các cell được render lại
         javafx.application.Platform.runLater(() -> {
-            // Refresh toàn bộ TableView - điều này sẽ trigger updateItem cho tất cả các cell
+            // Refresh toàn bộ TableView - điều này sẽ trigger updateItem cho tất cả các
+            // cell
             tblFoods.refresh();
         });
     }
@@ -121,29 +136,29 @@ public class FoodManagerController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                
+
                 // Luôn clear graphic trước để tránh hiển thị sai
                 setGraphic(null);
-                
+
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     currentFood = null;
                     return;
                 }
-                
+
                 Food food = getTableRow().getItem();
-                
+
                 // Chỉ update nếu food thay đổi hoặc chưa được set
                 if (food != currentFood) {
                     currentFood = food;
                     // Clear các event handler cũ trước khi set mới
                     editBtn.setOnAction(null);
                     deleteBtn.setOnAction(null);
-                    
+
                     // Set event handlers mới
                     editBtn.setOnAction(e -> openEditFoodModal(food));
                     deleteBtn.setOnAction(e -> confirmDelete(food));
                 }
-                
+
                 // Luôn set graphic để đảm bảo buttons được hiển thị
                 setGraphic(graphic);
             }
@@ -158,14 +173,14 @@ public class FoodManagerController {
     private void updatePagination() {
         int pageCount = (int) Math.ceil((double) allFoods.size() / ROWS_PER_PAGE);
         pagination.setPageCount(pageCount == 0 ? 1 : pageCount);
-        
+
         // Reset về trang đầu nếu trang hiện tại vượt quá số trang mới
         int currentPage = pagination.getCurrentPageIndex();
         if (currentPage >= pageCount && pageCount > 0) {
             pagination.setCurrentPageIndex(0);
             currentPage = 0;
         }
-        
+
         // Cập nhật TableView cho trang hiện tại
         updateTableForPage(currentPage);
     }
@@ -205,11 +220,15 @@ public class FoodManagerController {
         alert.setTitle("Xác nhận xóa");
         alert.setContentText("Xóa món: \"" + food.getFoodName() + "\"?");
         if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            if (foodRepo.deleteFood(food.getFoodId())) {
-                showInfo("Đã xóa thành công!");
-                refreshFoodList();
-            } else {
-                showError("Xóa thất bại!");
+            try {
+                if (foodRepo.deleteFood(food.getFoodId())) {
+                    showInfo("Đã xóa hoặc chuyển sang trạng thái 'Hết hàng' do có dữ liệu liên quan.");
+                    refreshFoodList();
+                } else {
+                    showError("Xóa thất bại!");
+                }
+            } catch (Exception e) {
+                showError("Lỗi khi xóa: " + e.getMessage());
             }
         }
     }

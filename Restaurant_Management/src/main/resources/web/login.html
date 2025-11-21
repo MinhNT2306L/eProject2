@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Đăng nhập - Restaurant Ordering</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-box">
+            <h1>🍽️ Đăng nhập</h1>
+            <p class="subtitle">Nhập thông tin đăng nhập của bạn</p>
+            
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <input type="text" id="username" name="username" required autocomplete="username" placeholder="Nhập tên đăng nhập">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Nhập mật khẩu">
+                </div>
+                
+                <button type="submit" id="loginBtn" class="login-btn">
+                    <span id="loginBtnText">Đăng nhập</span>
+                    <span id="loginBtnSpinner" class="spinner" style="display: none;">⏳</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>
+
+

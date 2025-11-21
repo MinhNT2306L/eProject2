@@ -103,9 +103,18 @@ CREATE TABLE `monan` (
 
 -- Dữ liệu monan mẫu
 INSERT INTO `monan` (`ten_mon`, `loai_mon`, `gia`, `mo_ta`, `trang_thai`) VALUES
-('Phở bò', 'Món chính', 50000, 'Phở bò truyền thống', 'CON_HANG'),
-('Gỏi cuốn', 'Khai vị', 20000, 'Gỏi cuốn tôm thịt', 'CON_HANG'),
-('Cà phê sữa', 'Đồ uống', 15000, 'Cà phê sữa đá', 'CON_HANG');
+('Phở bò đặc biệt', 'Món chính', 65000, 'Phở bò tái nạm gầu, nước dùng ninh xương 24h', 'CON_HANG'),
+('Gỏi cuốn tôm thịt', 'Khai vị', 25000, 'Gỏi cuốn tươi với tôm, thịt ba chỉ và rau sống', 'CON_HANG'),
+('Cà phê sữa đá', 'Đồ uống', 25000, 'Cà phê Robusta đậm đà pha phin', 'CON_HANG'),
+('Bún bò Huế', 'Món chính', 60000, 'Bún bò Huế chuẩn vị, cay nồng đậm đà', 'CON_HANG'),
+('Cơm tấm sườn bì chả', 'Món chính', 55000, 'Cơm tấm sườn nướng than hoa, bì thính, chả trứng', 'CON_HANG'),
+('Nem rán Hà Nội', 'Khai vị', 40000, 'Nem rán giòn rụm, nhân thịt mộc nhĩ nấm hương', 'CON_HANG'),
+('Trà đào cam sả', 'Đồ uống', 35000, 'Trà đào thanh mát với cam vàng và sả tươi', 'CON_HANG'),
+('Mì Ý sốt bò băm', 'Món chính', 75000, 'Mì Spaghetti sốt Bolognese bò băm cà chua', 'CON_HANG'),
+('Salad Caesar', 'Khai vị', 55000, 'Salad rau Romaine, sốt Caesar, croutons và phô mai', 'CON_HANG'),
+('Cơm rang dưa bò', 'Món chính', 50000, 'Cơm rang giòn hạt với dưa chua và thịt bò', 'CON_HANG'),
+('Khoai tây chiên', 'Khai vị', 30000, 'Khoai tây chiên giòn chấm tương ớt', 'CON_HANG'),
+('Nước ép dưa hấu', 'Đồ uống', 30000, 'Nước ép dưa hấu nguyên chất không đường', 'CON_HANG');
 
 -- ===============================
 -- Bảng datban
@@ -220,6 +229,13 @@ CREATE TABLE `nguyenlieu` (
 INSERT INTO `nguyenlieu` (`ten_nguyen_lieu`, `so_luong`, `don_vi`, `nha_cung_cap`, `ngay_nhap`, `ngay_het_han`, `trang_thai`) VALUES
 ('Thịt bò', 50.00, 'kg', 'Công ty Thực phẩm ABC', '2025-01-15', '2025-02-15', 'CON_HANG'),
 ('Rau xà lách', 20.00, 'kg', 'Nông trại XYZ', '2025-01-20', '2025-01-25', 'CON_HANG'),
-('Bánh phở', 100.00, 'cai', 'Cơ sở sản xuất DEF', '2025-01-18', '2025-02-18', 'CON_HANG');
+('Bánh phở', 100.00, 'cai', 'Cơ sở sản xuất DEF', '2025-01-18', '2025-02-18', 'CON_HANG'),
+('Thịt heo ba chỉ', 30.00, 'kg', 'CP Food', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 7 DAY), 'CON_HANG'),
+('Tôm sú', 15.00, 'kg', 'Hải sản Biển Đông', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY), 'CON_HANG'),
+('Gạo ST25', 100.00, 'kg', 'Đại lý Gạo Ngon', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 180 DAY), 'CON_HANG'),
+('Cà chua', 10.00, 'kg', 'Nông trại Đà Lạt', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 5 DAY), 'CON_HANG'),
+('Trứng gà', 200.00, 'cai', 'Trứng Ba Huân', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 14 DAY), 'CON_HANG'),
+('Bún tươi', 50.00, 'kg', 'Lò bún Thủ Đức', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), 'CON_HANG'),
+('Sữa đặc', 48.00, 'cai', 'Vinamilk', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 365 DAY), 'CON_HANG');
 
 

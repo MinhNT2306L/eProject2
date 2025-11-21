@@ -46,5 +46,15 @@ public class OrderDetailRepo {
         }
         return details;
     }
+
+    public void updateOrderDetail(OrderDetail orderDetail) throws SQLException {
+        // Update quantity - thanh_tien is auto-calculated by database
+        String sql = "UPDATE order_chitiet SET so_luong = ? WHERE order_ct_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderDetail.getSoLuong());
+            ps.setInt(2, orderDetail.getOrderCtId());
+            ps.executeUpdate();
+        }
+    }
 }
 

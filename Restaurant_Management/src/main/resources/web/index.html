@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi" class="antialiased bg-slate-50">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Restaurant POS</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                        'elevation': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="text-slate-900 h-full bg-slate-50">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-8">
+                    <div class="flex-shrink-0 flex items-center gap-2">
+                        <span class="text-2xl">🍽️</span>
+                        <h1 class="text-xl font-bold tracking-tight text-slate-900">Restaurant POS</h1>
+                    </div>
+
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex space-x-1">
+                        <button
+                            class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-colors active bg-slate-100 text-slate-900"
+                            data-view="menu">
+                            Thực đơn
+                        </button>
+                        <button
+                            class="nav-tab px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+                            data-view="orders">
+                            Đơn hàng
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="hidden sm:flex flex-col items-end">
+                        <span class="text-sm font-semibold text-slate-900" id="userInfo">Admin</span>
+                        <span class="text-xs text-slate-500">Quản lý</span>
+                    </div>
+                    <button id="logoutBtn"
+                        class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+                        title="Đăng xuất">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation (Bottom Border) -->
+        <div class="md:hidden border-t border-slate-100 flex">
+            <button class="nav-tab flex-1 py-3 text-sm font-medium text-center active bg-slate-50 text-slate-900"
+                data-view="menu">Thực đơn</button>
+            <button class="nav-tab flex-1 py-3 text-sm font-medium text-center text-slate-500" data-view="orders">Đơn
+                hàng</button>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8 items-start">
+
+            <!-- Main Content Area -->
+            <main class="lg:col-span-8 xl:col-span-9 space-y-6">
+
+                <!-- Menu View -->
+                <div id="menuView" class="view active space-y-6">
+                    <!-- Controls Bar -->
+                    <div
+                        class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+                        <div class="relative w-full sm:w-96">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" id="menuSearch"
+                                class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                placeholder="Tìm món ăn...">
+                        </div>
+
+                        <div class="flex gap-3 w-full sm:w-auto">
+                            <select id="tableSelect"
+                                class="flex-1 sm:flex-none pl-4 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 cursor-pointer">
+                                <option value="">Chọn bàn...</option>
+                            </select>
+                            <button id="refreshMenuBtn"
+                                class="p-2 text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors">
+                                <span class="refresh-icon block">🔄</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="category-tabs flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                        <button
+                            class="category-tab px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium shadow-sm transition-all whitespace-nowrap active"
+                            data-category="all">Tất cả</button>
+                    </div>
+
+                    <!-- Loading & Error -->
+                    <div id="menuLoading" class="text-center py-12">
+                        <div
+                            class="spinner w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full mx-auto mb-4">
+                        </div>
+                        <p class="text-slate-500 font-medium">Đang tải dữ liệu...</p>
+                    </div>
+                    <div id="menuError"
+                        class="hidden p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm text-center font-medium">
+                    </div>
+
+                    <!-- Menu Grid -->
+                    <div id="menuContainer" class="hidden">
+                        <div id="menuItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders View -->
+                <div id="ordersView" class="view hidden space-y-6">
+                    <div
+                        class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h2 class="text-lg font-bold text-slate-900">Danh sách đơn hàng</h2>
+                        <button id="refreshOrdersBtn"
+                            class="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium text-sm hover:bg-slate-100 transition-all">
+                            <span>🔄</span> <span>Làm mới</span>
+                        </button>
+                    </div>
+
+                    <div id="ordersLoading" class="text-center py-12">
+                        <div
+                            class="spinner w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full mx-auto mb-4">
+                        </div>
+                        <p class="text-slate-500 font-medium">Đang tải đơn hàng...</p>
+                    </div>
+                    <div id="ordersError"
+                        class="hidden p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm text-center font-medium">
+                    </div>
+                    <div id="ordersList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+
+            </main>
+
+            <!-- Sidebar Cart (Desktop) / Floating Cart (Mobile) -->
+            <aside class="lg:col-span-4 xl:col-span-3">
+                <div id="cartContainer" class="fixed bottom-0 left-0 right-0 z-50 lg:static lg:z-auto">
+                    <!-- Mobile Backdrop -->
+                    <div id="cartBackdrop"
+                        class="cart-backdrop absolute inset-0 bg-slate-900/30 backdrop-blur-sm lg:hidden">
+                    </div>
+
+                    <!-- Cart Content -->
+                    <div id="cartPanel"
+                        class="cart-panel bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.15)] lg:shadow-soft lg:border lg:rounded-xl lg:sticky lg:top-24 transition-transform duration-300">
+                        <div
+                            class="lg:hidden flex items-center justify-between px-4 pt-4 pb-3 border-b border-slate-100">
+                            <div>
+                                <p class="text-sm font-semibold text-slate-900">Giỏ hàng</p>
+                                <p id="cartSummaryLabel" class="text-xs text-slate-500">Chưa có món nào</p>
+                            </div>
+                            <button id="closeCartBtn"
+                                class="text-sm font-medium text-slate-500 hover:text-slate-900 px-3 py-1 rounded-lg transition-colors">
+                                Thu gọn
+                            </button>
+                        </div>
+                        <div
+                            class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 lg:rounded-t-xl">
+                            <h2 class="font-bold text-slate-900 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                Giỏ hàng hiện tại
+                            </h2>
+                            <button id="clearCartBtn"
+                                class="text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded transition-colors">
+                                Xóa hết
+                            </button>
+                        </div>
+
+                        <div id="cartItems"
+                            class="max-h-[60vh] lg:max-h-[calc(100vh-300px)] overflow-y-auto p-4 space-y-3 min-h-[100px]">
+                            <!-- Empty State -->
+                            <div class="text-center py-8 text-slate-400 text-sm">
+                                <p>Chưa có món nào</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 border-t border-slate-100 lg:rounded-b-xl space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-slate-500">Tổng tiền</span>
+                                <strong class="text-xl font-bold text-slate-900"><span id="cartTotal">0</span>
+                                    đ</strong>
+                            </div>
+                            <button id="submitOrderBtn"
+                                class="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-sm shadow-lg shadow-primary-600/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                disabled>
+                                Thanh toán / Đặt món
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <button id="cartFab"
+        class="cart-fab lg:hidden fixed bottom-5 right-4 px-5 py-3 rounded-2xl shadow-elevation flex flex-col gap-1 z-50"
+        type="button" aria-label="Mở giỏ hàng" disabled>
+        <span class="text-xs uppercase tracking-wider font-medium opacity-80">Giỏ hàng</span>
+        <div class="flex items-center justify-between gap-4">
+            <span id="cartFabCount" class="text-base font-semibold">0 món</span>
+            <span id="cartFabTotal" class="text-sm font-semibold">0 đ</span>
+        </div>
+    </button>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="modal fixed inset-0 z-[100] hidden" aria-labelledby="modal-title"
+        aria-modal="true">
+        <div class="modal-backdrop fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity opacity-0"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div
+                    class="modal-content relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-lg opacity-0 scale-95">
+                    <div
+                        class="bg-white px-4 py-4 border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
+                        <h3 class="text-lg font-bold text-slate-900">Chi tiết đơn hàng #<span id="orderDetailId"></span>
+                        </h3>
+                        <button
+                            class="rounded-full p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all"
+                            onclick="closeOrderDetail()">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="px-6 py-6 max-h-[70vh] overflow-y-auto">
+                        <div id="orderDetailInfo"
+                            class="bg-slate-50 rounded-xl p-4 mb-6 text-sm text-slate-600 space-y-2 border border-slate-100">
+                        </div>
+                        <div class="mb-6">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Món đã gọi</h4>
+                            <div id="orderDetailItems" class="space-y-3"></div>
+                        </div>
+                        <div class="flex justify-between items-center py-4 border-t border-slate-100 mb-6">
+                            <span class="text-sm font-medium text-slate-600">Tổng tiền</span>
+                            <strong class="text-xl font-bold text-slate-900"><span id="orderDetailTotal">0</span>
+                                đ</strong>
+                        </div>
+                        <div id="paymentSection" class="space-y-4 pt-4 border-t border-slate-100">
+                            <h3 class="text-sm font-bold text-slate-900">Thanh toán</h3>
+                            <div id="paymentStatus"></div>
+                            <div id="paymentForm" class="hidden space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-700 mb-1">Phương thức</label>
+                                        <select id="paymentMethod"
+                                            class="w-full rounded-lg border-slate-200 text-sm focus:ring-primary-500 focus:border-primary-500 py-2">
+                                            <option value="CASH">Tiền mặt</option>
+                                            <option value="BANK_TRANSFER">Chuyển khoản</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-700 mb-1">Số tiền (đ)</label>
+                                        <input type="number" id="amountPaid"
+                                            class="w-full rounded-lg border-slate-200 text-sm focus:ring-primary-500 focus:border-primary-500 py-2"
+                                            placeholder="0">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Ghi chú</label>
+                                    <input type="text" id="paymentNote"
+                                        class="w-full rounded-lg border-slate-200 text-sm focus:ring-primary-500 focus:border-primary-500 py-2"
+                                        placeholder="Nhập ghi chú...">
+                                </div>
+                                <button id="confirmPaymentBtn"
+                                    class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-sm shadow-lg shadow-green-600/20 active:scale-[0.98] transition-all">Xác
+                                    nhận thanh toán</button>
+                            </div>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-slate-100">
+                            <h3 class="text-sm font-bold text-slate-900 mb-4">Thêm món</h3>
+                            <div class="relative mb-4">
+                                <input type="text" id="addItemSearch"
+                                    class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                    placeholder="Tìm món...">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span
+                                        class="text-slate-400 text-sm">🔍</span></div>
+                            </div>
+                            <div id="addItemsMenu" class="max-h-48 overflow-y-auto space-y-2 mb-4"></div>
+                            <div id="addItemsCart" class="space-y-2 mb-4"></div>
+                            <button id="addItemsBtn"
+                                class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold text-sm shadow-lg shadow-slate-900/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                disabled>Thêm vào đơn hàng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal fixed inset-0 z-[110] hidden">
+        <div class="modal-backdrop fixed inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+        <div class="fixed inset-0 z-10 flex items-center justify-center p-4">
+            <div
+                class="modal-content bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center transform transition-all scale-100">
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">✅</span>
+                </div>
+                <h2 class="text-lg font-bold text-slate-900 mb-2">Thành công!</h2>
+                <p id="successMessage" class="text-slate-600 text-sm mb-6"></p>
+                <button id="closeModalBtn"
+                    class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-900 rounded-xl font-semibold text-sm transition-colors">Đóng</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

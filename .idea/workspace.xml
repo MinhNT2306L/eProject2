@@ -4,7 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="da8ee44f-50d4-453e-9629-b6b7d47861df" name="Changes" comment="" />
+    <list default="true" id="da8ee44f-50d4-453e-9629-b6b7d47861df" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FoodRepo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/DashBoardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/DashBoardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/Manager/Food/FoodManagerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/Manager/Food/FoodManagerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/OrderSummaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/OrderSummaryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/PaymentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/FoodRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/FoodRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/OrderDetailRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/OrderDetailRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/com/example/restaurant_management/View/PaymentView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/com/example/restaurant_management/View/PaymentView.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/com/example/restaurant_management/View/dashboard-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/com/example/restaurant_management/View/dashboard-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bill_0_1763380598321.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bill_0_1763382219591.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bill_0_1763384166761.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/create_nguyenlieu_table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migration_add_nguyenlieu.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/quanlynhahang.sql" beforeDir="false" afterPath="$PROJECT_DIR$/quanlynhahang.sql" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,32 +53,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Remote JVM Debug.Maven Debug.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/nguyenthanhminh/Desktop/eProject2&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.JavaFX&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "JavaScript Debug.login.html.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Remote JVM Debug.Maven Debug.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/nguyenthanhminh/Desktop/eProject2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.JavaFX",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="eProject2" />
@@ -110,7 +134,9 @@
       <workItem from="1762955711832" duration="1468000" />
       <workItem from="1763380319829" duration="77000" />
       <workItem from="1763380466337" duration="1988000" />
-      <workItem from="1763383992880" duration="3177000" />
+      <workItem from="1763383992880" duration="12418000" />
+      <workItem from="1763615825097" duration="1840000" />
+      <workItem from="1763620756951" duration="6133000" />
     </task>
     <servers />
   </component>

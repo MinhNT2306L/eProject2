@@ -21,7 +21,7 @@ public class FoodRepo extends EntityRepo<Food> {
         String sql = "SELECT * FROM monan";
 
         try (PreparedStatement stmt = this.getConn().prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+                ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 foodList.add(this.getMapper().mapRow(rs));
             }
@@ -64,13 +64,28 @@ public class FoodRepo extends EntityRepo<Food> {
         }
     }
 
-    /** Xóa món ăn */
+    /** Xóa món ăn (Soft Delete nếu có ràng buộc) */
     public boolean deleteFood(int id) {
         String sql = "DELETE FROM monan WHERE mon_id=?";
         try (PreparedStatement stmt = this.getConn().prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
 
+        } catch (SQLException e) {
+            // Nếu lỗi ràng buộc khóa ngoại (đã có order), chuyển sang Soft Delete
+            if (e instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                return softDeleteFood(id);
+            }
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** Soft Delete: Chuyển trạng thái sang HET_HANG */
+    private boolean softDeleteFood(int id) {
+        String sql = "UPDATE monan SET trang_thai='HET_HANG' WHERE mon_id=?";
+        try (PreparedStatement stmt = this.getConn().prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
