@@ -25,7 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTables();
     loadMenu();
     loadActiveOrders();
+    loadActiveOrders();
     syncCartPanelState();
+
+    // Initialize WebSocket
+    const socket = SocketManager.getInstance();
+    socket.on('TABLE_UPDATE', (data) => {
+        console.log('Received table update:', data);
+        loadTables();
+        if (currentView === 'orders') {
+            refreshOrders();
+        }
+    });
+
+    socket.on('BATCH_COMPLETED', (data) => {
+        console.log('Batch completed:', data);
+        showNotification(`Bàn ${data.tableId}: Đồ ăn đã xong!`, 'success');
+        // Play sound
+        // const audio = new Audio('notification.mp3');
+        // audio.play().catch(e => console.log('Audio play failed', e));
+    });
 });
 
 // Display user info
@@ -33,7 +52,9 @@ function displayUserInfo() {
     const user = getCurrentUser();
     const userInfo = document.getElementById('userInfo');
     if (user && userInfo) {
-        userInfo.textContent = `👤 ${user.fullName || user.username}`;
+        const roleNames = { 'STAFF': 'Nhân viên', 'MANAGER': 'Quản lý' };
+        const roleDisplay = roleNames[user.role] || user.role;
+        userInfo.textContent = `👤 ${user.fullName || user.username} (${roleDisplay})`;
     }
 }
 
@@ -584,12 +605,27 @@ async function submitOrder() {
             }))
         };
 
+        // Optimistic UI: Update table status immediately
+        const tableId = parseInt(tableSelect.value);
+        const tableOption = tableSelect.querySelector(`option[value="${tableId}"]`);
+        if (tableOption) {
+            tableOption.textContent = tableOption.textContent.replace('(Trống)', '(Đang phục vụ)');
+            tableOption.disabled = true;
+            tableOption.classList.add('text-slate-400', 'bg-slate-50');
+        }
+
         const response = await apiRequest('/api/orders', {
             method: 'POST',
             body: JSON.stringify(orderData)
         });
 
         if (!response.ok) {
+            // Rollback Optimistic UI on failure
+            if (tableOption) {
+                tableOption.textContent = tableOption.textContent.replace('(Đang phục vụ)', '(Trống)');
+                tableOption.disabled = false;
+                tableOption.classList.remove('text-slate-400', 'bg-slate-50');
+            }
             const error = await response.json();
             throw new Error(error.error || 'Failed to create order');
         }
@@ -606,6 +642,9 @@ async function submitOrder() {
         updateCart();
         renderMenuItems();
         tableSelect.value = '';
+
+        // Refresh tables to show new status
+        loadTables();
 
         // Refresh orders if on orders view
         if (currentView === 'orders') {
@@ -671,12 +710,17 @@ function renderOrdersList() {
     }
 
     activeOrders.forEach(order => {
+        const hasReadyItems = order.hasReadyItems; // Assuming API returns this
+        const statusBadge = hasReadyItems
+            ? '<span class="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 uppercase tracking-wide animate-pulse">DISH READY</span>'
+            : `<span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 uppercase tracking-wide">${getStatusDisplay(order.status)}</span>`;
+
         const orderDiv = document.createElement('div');
-        orderDiv.className = 'bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200';
+        orderDiv.className = `bg-white border ${hasReadyItems ? 'border-orange-300 shadow-md' : 'border-slate-200'} rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200`;
         orderDiv.innerHTML = `
             <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-100">
                 <h3 class="text-base font-bold text-slate-900">Đơn hàng #${order.id}</h3>
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 uppercase tracking-wide">${getStatusDisplay(order.status)}</span>
+                ${statusBadge}
             </div>
             <div class="space-y-2 mb-5">
                 <div class="flex justify-between text-sm">
@@ -739,15 +783,57 @@ async function viewOrderDetail(orderId) {
         const itemsDiv = document.getElementById('orderDetailItems');
         itemsDiv.innerHTML = '';
 
-        order.items.forEach(item => {
+        // Sort items: READY first, then PENDING, then SERVED/CANCELLED
+        const sortedItems = order.items.sort((a, b) => {
+            const priority = { 'READY': 1, 'PENDING': 2, 'SERVED': 3, 'CANCELLED': 4 };
+            const pA = priority[a.status] || 2;
+            const pB = priority[b.status] || 2;
+            return pA - pB;
+        });
+
+        // Check for Serve All condition
+        const readyItemsCount = order.items.filter(i => i.status === 'READY').length;
+        if (readyItemsCount >= 2) {
+            const serveAllDiv = document.createElement('div');
+            serveAllDiv.className = 'flex justify-end mb-2';
+            serveAllDiv.innerHTML = `
+                <button onclick="serveAllItems(${order.id})" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                    <span>⚡</span> Phục vụ tất cả (${readyItemsCount})
+                </button>
+            `;
+            itemsDiv.appendChild(serveAllDiv);
+        }
+
+        sortedItems.forEach(item => {
             const itemDiv = document.createElement('div');
-            itemDiv.className = 'flex justify-between items-center py-2 border-b border-slate-50 last:border-0';
+            const isReady = item.status === 'READY';
+            const isServed = item.status === 'SERVED';
+
+            let itemClass = 'flex justify-between items-center py-3 border-b border-slate-50 last:border-0';
+            if (isReady) {
+                itemClass += ' bg-green-50 -mx-4 px-4 border-l-4 border-green-500';
+            } else if (isServed) {
+                itemClass += ' opacity-50 grayscale';
+            }
+
+            itemDiv.className = itemClass;
             itemDiv.innerHTML = `
                 <div class="flex-1">
-                    <div class="font-medium text-slate-900 text-sm">${escapeHtml(item.foodName)}</div>
-                    <div class="text-xs text-slate-500">${item.quantity} x ${formatPrice(item.unitPrice)} đ</div>
+                    <div class="flex items-center gap-2">
+                        <div class="font-medium text-slate-900 text-sm">${escapeHtml(item.foodName)}</div>
+                        ${isReady ? '<span class="text-xs font-bold text-green-600 bg-white px-2 py-0.5 rounded-full border border-green-200">Món đã xong</span>' : ''}
+                        ${isServed ? '<span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">Đã phục vụ</span>' : ''}
+                    </div>
+                    <div class="text-xs text-slate-500 mt-0.5">${item.quantity} x ${formatPrice(item.unitPrice)} đ</div>
                 </div>
-                <div class="font-bold text-slate-900 text-sm">${formatPrice(item.total)} đ</div>
+                <div class="flex items-center gap-3">
+                    <div class="font-bold text-slate-900 text-sm">${formatPrice(item.total)} đ</div>
+                    ${isReady ? `
+                        <button onclick="serveItem(${order.id}, ${item.foodId})" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-colors">
+                            Phục vụ
+                        </button>
+                    ` : ''}
+                </div>
             `;
             itemsDiv.appendChild(itemDiv);
         });
@@ -781,6 +867,7 @@ function updatePaymentSection(order) {
     const paymentStatus = document.getElementById('paymentStatus');
     const paymentForm = document.getElementById('paymentForm');
     const addItemsSection = document.querySelector('.mt-8.pt-6.border-t');
+    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
 
     if (order.status === 'DA_THANH_TOAN') {
         // Order is already paid
@@ -793,14 +880,58 @@ function updatePaymentSection(order) {
         paymentForm.classList.add('hidden');
         addItemsSection.classList.add('hidden');
     } else {
-        // Order can be paid
-        paymentStatus.innerHTML = '';
-        paymentForm.classList.remove('hidden');
+        // Strict Payment Guard: All items must be SERVED or CANCELLED
+        const canCheckout = order.items.every(item =>
+            ['SERVED', 'CANCELLED'].includes(item.status)
+        );
+
+        if (!canCheckout) {
+            paymentStatus.innerHTML = `
+                <div class="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-100 rounded-xl text-yellow-700 text-sm font-medium">
+                    <span>⏳</span>
+                    <span>Vui lòng phục vụ hết món trước khi thanh toán</span>
+                </div>
+            `;
+            paymentForm.classList.remove('hidden');
+            confirmPaymentBtn.disabled = true;
+            confirmPaymentBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            confirmPaymentBtn.title = "Vui lòng phục vụ hết món trước khi thanh toán";
+        } else {
+            paymentStatus.innerHTML = '';
+            paymentForm.classList.remove('hidden');
+            confirmPaymentBtn.disabled = false;
+            confirmPaymentBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            confirmPaymentBtn.title = "";
+        }
+
         addItemsSection.classList.remove('hidden');
 
         // Pre-fill amount with total
         const amountPaidInput = document.getElementById('amountPaid');
         amountPaidInput.value = Math.ceil(order.total);
+    }
+}
+
+// Serve all items
+async function serveAllItems(orderId) {
+    try {
+        const response = await apiRequest(`/api/orders/${orderId}/serve-all`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            showNotification('Đã phục vụ tất cả món ăn', 'success');
+            // Refresh order detail
+            await viewOrderDetail(orderId);
+            // Refresh orders list (to update badge)
+            await refreshOrders();
+        } else {
+            const error = await response.json();
+            alert(`Lỗi: ${error.error || 'Failed to serve all items'}`);
+        }
+    } catch (error) {
+        console.error('Error serving all items:', error);
+        alert('Lỗi kết nối');
     }
 }
 
@@ -844,6 +975,17 @@ async function processPayment() {
     btn.disabled = true;
     btn.textContent = 'Đang xử lý...';
 
+    // Optimistic UI: Update table status immediately
+    const tableId = activeOrders.find(o => o.id === currentOrderId)?.tableId;
+    if (tableId) {
+        const tableOption = document.querySelector(`#tableSelect option[value="${tableId}"]`);
+        if (tableOption) {
+            tableOption.textContent = tableOption.textContent.replace('(Đang phục vụ)', '(Trống)');
+            tableOption.disabled = false;
+            tableOption.classList.remove('text-slate-400', 'bg-slate-50');
+        }
+    }
+
     try {
         const response = await apiRequest(`/api/orders/${currentOrderId}/pay`, {
             method: 'POST',
@@ -855,6 +997,15 @@ async function processPayment() {
         });
 
         if (!response.ok) {
+            // Rollback Optimistic UI
+            if (tableId) {
+                const tableOption = document.querySelector(`#tableSelect option[value="${tableId}"]`);
+                if (tableOption) {
+                    tableOption.textContent = tableOption.textContent.replace('(Trống)', '(Đang phục vụ)');
+                    tableOption.disabled = true;
+                    tableOption.classList.add('text-slate-400', 'bg-slate-50');
+                }
+            }
             const error = await response.json();
             throw new Error(error.error || 'Failed to process payment');
         }
@@ -871,6 +1022,9 @@ async function processPayment() {
 
         // Refresh orders list to remove paid order
         await refreshOrders();
+
+        // Refresh tables to update status (Red -> Green)
+        await loadTables();
 
         // Close modal after a moment
         setTimeout(() => {
@@ -1133,4 +1287,56 @@ function showToast(message, type = 'success') {
             toast.remove();
         });
     }, 2000);
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-0 z-50 ${type === 'success' ? 'bg-green-500 text-white' :
+        type === 'error' ? 'bg-red-500 text-white' :
+            'bg-blue-500 text-white'
+        }`;
+    notification.style.minWidth = '300px';
+
+    // Content
+    notification.innerHTML = `
+        <div class="flex items-center justify-between">
+            <span class="font-medium">${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200 focus:outline-none">
+                ✕
+            </button>
+        </div>
+    `;
+
+    // Add to DOM
+    document.body.appendChild(notification);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('opacity-0', 'translate-y-[-20px]');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+
+// Serve item
+async function serveItem(orderId, foodId) {
+    try {
+        const response = await apiRequest(`/api/orders/${orderId}/items/${foodId}/serve`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            showNotification('Đã phục vụ món ăn', 'success');
+            // Refresh order detail
+            await viewOrderDetail(orderId);
+            // Refresh orders list (to update badge)
+            await refreshOrders();
+        } else {
+            const error = await response.json();
+            alert(`Lỗi: ${error.error || 'Failed to serve item'}`);
+        }
+    } catch (error) {
+        console.error('Error serving item:', error);
+        alert('Lỗi kết nối');
+    }
 }

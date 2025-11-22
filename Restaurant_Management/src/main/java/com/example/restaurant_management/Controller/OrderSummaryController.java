@@ -43,7 +43,6 @@ public class OrderSummaryController {
     private VBox orderDetailsContainer;
     @FXML
     private VBox topVBox;
-    
 
     private Table currentTable;
     private Order existingOrder; // Order to add items to (if adding to existing order)
@@ -106,7 +105,8 @@ public class OrderSummaryController {
         quantitySpinner.setStyle("-fx-font-size: 13px;");
 
         Button addBtn = new Button("Thêm");
-        addBtn.setStyle("-fx-background-color: #009688; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold;");
+        addBtn.setStyle(
+                "-fx-background-color: #009688; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold;");
 
         addBtn.setOnAction(e -> addFoodToOrder(food, quantitySpinner.getValue()));
 
@@ -153,7 +153,8 @@ public class OrderSummaryController {
 
             // Nút "X" để xóa
             Button removeBtn = new Button("X");
-            removeBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 15; -fx-padding: 1 6;");
+            removeBtn.setStyle(
+                    "-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 15; -fx-padding: 1 6;");
             removeBtn.setOnAction(e -> removeFoodFromOrder(food));
 
             // Dùng Pane rỗng để đẩy giá và nút xóa sang phải
@@ -168,7 +169,6 @@ public class OrderSummaryController {
         lblTotalPrice.setText(String.format("%,.0f VND", totalPrice));
     }
 
-
     @FXML
     public void initialize() {
         btnPay.setText("Gửi bếp"); // Change button text to "Send to Kitchen"
@@ -178,6 +178,19 @@ public class OrderSummaryController {
     }
 
     private void handleSendToKitchen() {
+        // Submission Guard: Check if parent window is still active
+        Stage currentStage = (Stage) btnPay.getScene().getWindow();
+        if (currentStage.getOwner() == null || !currentStage.getOwner().isShowing()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Cửa sổ chính đã đóng. Không thể gửi đơn hàng!");
+            alert.showAndWait();
+            // Close this orphaned window
+            currentStage.close();
+            return;
+        }
+
         if (orderedItems.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Cảnh báo");
@@ -206,15 +219,15 @@ public class OrderSummaryController {
                 if (existingOrder != null) {
                     // Adding items to existing order
                     orderId = existingOrder.getOrderId();
-                    
+
                     // Get existing order details to check for duplicates
                     List<OrderDetail> existingDetails = orderDetailRepo.findByOrderId(orderId);
-                    
+
                     // Add new items to existing order
                     for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
                         Food food = entry.getKey();
                         Integer quantity = entry.getValue();
-                        
+
                         // Check if this food already exists in order details
                         boolean foodExists = false;
                         for (OrderDetail existingDetail : existingDetails) {
@@ -228,7 +241,7 @@ public class OrderSummaryController {
                                 break;
                             }
                         }
-                        
+
                         if (!foodExists) {
                             // Create new order detail
                             OrderDetail orderDetail = new OrderDetail();
@@ -240,24 +253,25 @@ public class OrderSummaryController {
                             orderDetailRepo.createOrderDetail(orderDetail);
                         }
                     }
-                    
-                    // Recalculate total from database (to get accurate thanh_tien for updated items)
+
+                    // Recalculate total from database (to get accurate thanh_tien for updated
+                    // items)
                     List<OrderDetail> updatedDetails = orderDetailRepo.findByOrderId(orderId);
                     double finalTotal = 0.0;
                     for (OrderDetail detail : updatedDetails) {
                         finalTotal += detail.getThanhTien();
                     }
-                    
+
                     // Update order total
                     orderRepo.updateOrderTotal(orderId, finalTotal);
-                    
+
                     // Show success message
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Thành công");
                     alert.setHeaderText(null);
                     alert.setContentText("Đã thêm món vào đơn hàng thành công!");
                     alert.showAndWait();
-                    
+
                 } else {
                     // Create new Order
                     Order order = new Order();

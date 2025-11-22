@@ -1,5 +1,7 @@
 package com.example.restaurant_management.Controller;
 
+import com.example.restaurant_management.entityRepo.TableRepo;
+import com.example.restaurant_management.mapper.TableMapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,6 +15,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class TableController {
 
@@ -25,7 +28,7 @@ public class TableController {
     @FXML
     private TableColumn<TableModel, String> colStatus;
 
-    private ObservableList<TableModel> data;
+    private TableRepo tableRepo = new TableRepo(new TableMapper());
 
     @FXML
     public void initialize() {
@@ -39,40 +42,30 @@ public class TableController {
         tableList.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.getStylesheets().add(
-                        getClass().getResource("/com/example/restaurant_management/table.css").toExternalForm()
-                );
+                        getClass().getResource("/com/example/restaurant_management/table.css").toExternalForm());
             }
         });
     }
 
     private void loadTableData() {
-        data = FXCollections.observableArrayList(
-                new TableModel(1, "Bàn 1", "Trống"),
-                new TableModel(2, "Bàn 2", "Đã đặt"),
-                new TableModel(3, "Bàn 3", "Trống"),
-                new TableModel(4, "Bàn 4", "Trống")
-        );
+        List<com.example.restaurant_management.entity.Table> tables = tableRepo.getAll();
+        ObservableList<TableModel> data = FXCollections.observableArrayList();
+        for (com.example.restaurant_management.entity.Table table : tables) {
+            data.add(new TableModel(table.getTableId(), "Bàn " + table.getTableNumber(), table.getStatus()));
+        }
         tableList.setItems(data);
     }
 
     @FXML
     private void refreshTables(ActionEvent event) {
-        // Làm mới danh sách bàn — ở đây tạm dùng lại dữ liệu mẫu
-        ObservableList<TableModel> data = FXCollections.observableArrayList(
-                new TableModel(1, "Bàn 1", "Trống"),
-                new TableModel(2, "Bàn 2", "Đã đặt"),
-                new TableModel(3, "Bàn 3", "Trống"),
-                new TableModel(4, "Bàn 4", "Đang phục vụ")
-        );
-        tableList.setItems(data);
-
-        System.out.println("Đã làm mới danh sách bàn!");
+        loadTableData();
+        System.out.println("Đã làm mới danh sách bàn từ database!");
     }
-
 
     @FXML
     private void backToLogin(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/com/example/restaurant_management/View/login-view.fxml"));
+        Parent root = FXMLLoader
+                .load(getClass().getResource("/com/example/restaurant_management/View/login-view.fxml"));
         Stage stage = (Stage) tableList.getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.setTitle("LOCAL FOOD - Đăng nhập");

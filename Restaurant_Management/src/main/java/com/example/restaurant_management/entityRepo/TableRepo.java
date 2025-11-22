@@ -17,6 +17,21 @@ public class TableRepo extends EntityRepo<Table> {
         super(mapper, "ban");
     }
 
+    @Override
+    public List<Table> getAll() {
+        // Auto-correct status: Set 'PHUC_VU' tables to 'TRONG' if no active order
+        // exists
+        String autoCorrectSql = "UPDATE ban b SET b.trang_thai = 'TRONG' " +
+                "WHERE b.trang_thai = 'PHUC_VU' " +
+                "AND NOT EXISTS (SELECT 1 FROM orders o WHERE o.ban_id = b.ban_id AND o.trang_thai IN ('MOI', 'DANG_PHUC_VU'))";
+        try (PreparedStatement ps = this.getConn().prepareStatement(autoCorrectSql)) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return super.getAll();
+    }
+
     public List<Table> getTableByStatus(String status) {
         try {
             List<Table> tableList = new ArrayList<>();
@@ -32,9 +47,11 @@ public class TableRepo extends EntityRepo<Table> {
             throw new RuntimeException(e);
         }
     }
+
     // Trong TableRepo (BanRepo)
     public void updateTableStatus(Connection conn, int banId, String trangThai) throws SQLException {
-        // Lưu ý: Trang thái bàn phải khớp với ENUM trong DB: 'TRONG','DAT_TRUOC','PHUC_VU'
+        // Lưu ý: Trang thái bàn phải khớp với ENUM trong DB:
+        // 'TRONG','DAT_TRUOC','PHUC_VU'
         String sql = "UPDATE ban SET trang_thai = ? WHERE ban_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, trangThai);
@@ -46,7 +63,7 @@ public class TableRepo extends EntityRepo<Table> {
     public boolean deleteByID(int tableId) {
         String sql = "DELETE FROM ban WHERE ban_id = ?";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, tableId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -58,7 +75,7 @@ public class TableRepo extends EntityRepo<Table> {
     public boolean insert(Table table) {
         String sql = "INSERT INTO ban (so_ban, trang_thai) VALUES (?, ?)";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, table.getTableNumber());
             stmt.setString(2, table.getStatus());

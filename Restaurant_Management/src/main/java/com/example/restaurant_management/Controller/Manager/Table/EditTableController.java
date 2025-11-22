@@ -10,12 +10,17 @@ import javafx.scene.layout.VBox;
 
 public class EditTableController {
 
-    @FXML private StackPane modalRoot;
-    @FXML private VBox modalContainer;
+    @FXML
+    private StackPane modalRoot;
+    @FXML
+    private VBox modalContainer;
 
-    @FXML private TextField txtSoBan;
-    @FXML private TextField txtSucChua;
-    @FXML private ComboBox<String> cbTrangThai;
+    @FXML
+    private TextField txtSoBan;
+    @FXML
+    private TextField txtSucChua;
+    @FXML
+    private ComboBox<String> cbTrangThai;
 
     private Table currentTable;
     private Runnable onSavedCallback;
@@ -64,8 +69,9 @@ public class EditTableController {
 
     private boolean updateTableInDB(Table table) {
         String sql = "UPDATE ban SET so_ban = ?, trang_thai = ? WHERE ban_id = ?";
-        try (var conn = tableRepo.getConn();
-             var stmt = conn.prepareStatement(sql)) {
+        // Use the shared connection but DO NOT close it (no try-with-resources for
+        // conn)
+        try (var stmt = tableRepo.getConn().prepareStatement(sql)) {
             stmt.setInt(1, table.getTableNumber());
             stmt.setString(2, table.getStatus());
             stmt.setInt(3, table.getTableId());

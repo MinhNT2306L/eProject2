@@ -20,23 +20,31 @@ public class DashBoardController {
     private FlowPane tableContainer;
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         refreshTables();
+        initWebSocket();
+    }
+
+    private void initWebSocket() {
+        com.example.restaurant_management.websocket.JavaFXSocketManager.getInstance().subscribe(() -> {
+            System.out.println("DashBoardController: Received update from Singleton Manager");
+            javafx.application.Platform.runLater(this::refreshTables);
+        });
     }
 
     @FXML
-    public void refreshTables(ActionEvent event){
+    public void refreshTables(ActionEvent event) {
         refreshTables();
     }
 
-    private void refreshTables(){
+    private void refreshTables() {
         List<Table> tables = tableRepo.getAll();
         TableService.updateTableList(tableContainer, tables);
     }
 
     @FXML
-    public void logout(ActionEvent event){
-        Stage currentStage =(Stage) (((Node) event.getSource()).getScene().getWindow());
+    public void logout(ActionEvent event) {
+        Stage currentStage = (Stage) (((Node) event.getSource()).getScene().getWindow());
         LoginService.logout(currentStage);
     }
 }

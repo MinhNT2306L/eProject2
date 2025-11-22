@@ -14,8 +14,7 @@ public class OrderDetailMapper implements RowMapper<OrderDetail> {
                 rs.getObject("mon_id") != null ? rs.getInt("mon_id") : null,
                 rs.getObject("so_luong") != null ? rs.getInt("so_luong") : null,
                 rs.getDouble("don_gia"),
-                rs.getDouble("thanh_tien")
-        );
+                rs.getDouble("thanh_tien"),
+                rs.getString("trang_thai"));
     }
 }
-

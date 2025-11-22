@@ -18,16 +18,26 @@ import java.time.LocalDate;
 
 public class AddIngredientController {
 
-    @FXML private StackPane modalRoot;
-    @FXML private VBox modalContainer;
-    @FXML private Label titleLabel;
-    @FXML private TextField ingredientNameField;
-    @FXML private TextField quantityField;
-    @FXML private ComboBox<String> unitComboBox;
-    @FXML private TextField supplierField;
-    @FXML private DatePicker importDatePicker;
-    @FXML private DatePicker expiryDatePicker;
-    @FXML private ComboBox<String> statusComboBox;
+    @FXML
+    private StackPane modalRoot;
+    @FXML
+    private VBox modalContainer;
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private TextField ingredientNameField;
+    @FXML
+    private TextField quantityField;
+    @FXML
+    private ComboBox<String> unitComboBox;
+    @FXML
+    private TextField supplierField;
+    @FXML
+    private DatePicker importDatePicker;
+    @FXML
+    private DatePicker expiryDatePicker;
+    @FXML
+    private ComboBox<String> statusComboBox;
 
     private Runnable onIngredientAdded; // callback sau khi thêm/sửa xong
     private Ingredient currentIngredient; // null nếu là thêm mới, có giá trị nếu là sửa
@@ -42,6 +52,13 @@ public class AddIngredientController {
         StackPane.setAlignment(modalContainer, javafx.geometry.Pos.CENTER);
         // Đảm bảo modal root được căn giữa
         modalRoot.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // Close on blur (click outside)
+        modalRoot.setOnMouseClicked(event -> {
+            if (event.getTarget() == modalRoot) {
+                hide();
+            }
+        });
     }
 
     private void loadUnits() {
@@ -85,7 +102,7 @@ public class AddIngredientController {
             new Alert(Alert.AlertType.WARNING, "Vui lòng nhập tên nguyên liệu").showAndWait();
             return;
         }
-        
+
         try {
             double quantity = Double.parseDouble(quantityField.getText().trim());
             if (quantity < 0) {
@@ -96,12 +113,12 @@ public class AddIngredientController {
             new Alert(Alert.AlertType.WARNING, "Số lượng không hợp lệ").showAndWait();
             return;
         }
-        
+
         if (unitComboBox.getValue() == null) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng chọn đơn vị").showAndWait();
             return;
         }
-        
+
         if (statusComboBox.getValue() == null) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng chọn trạng thái").showAndWait();
             return;
@@ -115,11 +132,13 @@ public class AddIngredientController {
                 ingredient.setIngredientName(ingredientNameField.getText().trim());
                 ingredient.setQuantity(Double.parseDouble(quantityField.getText().trim()));
                 ingredient.setUnit(unitComboBox.getValue());
-                ingredient.setSupplier(supplierField.getText().trim().isEmpty() ? null : supplierField.getText().trim());
-                ingredient.setImportDate(importDatePicker.getValue() != null ? importDatePicker.getValue() : LocalDate.now());
+                ingredient
+                        .setSupplier(supplierField.getText().trim().isEmpty() ? null : supplierField.getText().trim());
+                ingredient.setImportDate(
+                        importDatePicker.getValue() != null ? importDatePicker.getValue() : LocalDate.now());
                 ingredient.setExpiryDate(expiryDatePicker.getValue());
                 ingredient.setStatus(statusComboBox.getValue());
-                
+
                 int rowsAffected = ingredientRepo.insert(ingredient);
                 if (rowsAffected > 0) {
                     new Alert(Alert.AlertType.INFORMATION, "Thêm nguyên liệu thành công!").showAndWait();
@@ -136,11 +155,13 @@ public class AddIngredientController {
                 currentIngredient.setIngredientName(ingredientNameField.getText().trim());
                 currentIngredient.setQuantity(Double.parseDouble(quantityField.getText().trim()));
                 currentIngredient.setUnit(unitComboBox.getValue());
-                currentIngredient.setSupplier(supplierField.getText().trim().isEmpty() ? null : supplierField.getText().trim());
-                currentIngredient.setImportDate(importDatePicker.getValue() != null ? importDatePicker.getValue() : LocalDate.now());
+                currentIngredient
+                        .setSupplier(supplierField.getText().trim().isEmpty() ? null : supplierField.getText().trim());
+                currentIngredient.setImportDate(
+                        importDatePicker.getValue() != null ? importDatePicker.getValue() : LocalDate.now());
                 currentIngredient.setExpiryDate(expiryDatePicker.getValue());
                 currentIngredient.setStatus(statusComboBox.getValue());
-                
+
                 int rowsAffected = ingredientRepo.update(currentIngredient);
                 if (rowsAffected > 0) {
                     new Alert(Alert.AlertType.INFORMATION, "Sửa nguyên liệu thành công!").showAndWait();
@@ -157,7 +178,7 @@ public class AddIngredientController {
             new Alert(Alert.AlertType.ERROR, "Lỗi: " + e.getMessage()).showAndWait();
         }
     }
-    
+
     private void clearForm() {
         ingredientNameField.clear();
         quantityField.clear();
@@ -191,4 +212,3 @@ public class AddIngredientController {
         modalRoot.setMouseTransparent(true);
     }
 }
-

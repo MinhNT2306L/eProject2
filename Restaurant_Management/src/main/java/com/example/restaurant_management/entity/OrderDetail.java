@@ -7,17 +7,30 @@ public class OrderDetail {
     private Integer soLuong;
     private double donGia;
     private double thanhTien;
+    private String trangThai;
 
     public OrderDetail() {
     }
 
-    public OrderDetail(int orderCtId, Integer orderId, Integer monId, Integer soLuong, double donGia, double thanhTien) {
+    public OrderDetail(int orderCtId, Integer orderId, Integer monId, Integer soLuong, double donGia,
+            double thanhTien) {
         this.orderCtId = orderCtId;
         this.orderId = orderId;
         this.monId = monId;
         this.soLuong = soLuong;
         this.donGia = donGia;
         this.thanhTien = thanhTien;
+    }
+
+    public OrderDetail(int orderCtId, Integer orderId, Integer monId, Integer soLuong, double donGia, double thanhTien,
+            String trangThai) {
+        this.orderCtId = orderCtId;
+        this.orderId = orderId;
+        this.monId = monId;
+        this.soLuong = soLuong;
+        this.donGia = donGia;
+        this.thanhTien = thanhTien;
+        this.trangThai = trangThai;
     }
 
     public int getOrderCtId() {
@@ -67,5 +80,12 @@ public class OrderDetail {
     public void setThanhTien(double thanhTien) {
         this.thanhTien = thanhTien;
     }
-}
 
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+}

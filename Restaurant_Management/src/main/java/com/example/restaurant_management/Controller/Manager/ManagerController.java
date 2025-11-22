@@ -37,22 +37,36 @@ public class ManagerController {
     private final TableRepo tableRepo = new TableRepo(new TableMapper());
 
     // === CÁC VIEW CHÍNH ===
-    @FXML private VBox tableView;
-    @FXML private VBox orderView;
-    @FXML private VBox customerView;
-    @FXML private VBox reportView;
-    @FXML private VBox menuManagementView;
-    @FXML private VBox ingredientView;
+    @FXML
+    private VBox tableView;
+    @FXML
+    private VBox orderView;
+    @FXML
+    private VBox customerView;
+    @FXML
+    private VBox reportView;
+    @FXML
+    private VBox menuManagementView;
+    @FXML
+    private VBox ingredientView;
 
     // === CÁC MODAL & COMPONENT ===
-    @FXML private BorderPane rootPane;
-    @FXML private StackPane contentArea;
-    @FXML private FlowPane tableContainer;
-    @FXML private VBox orderListContainer;
-    @FXML private StackPane addTableModal;
-    @FXML private AddTableController addTableModalController;
-    @FXML private StackPane editTableModal;
-    @FXML private EditTableController editTableModalController;
+    @FXML
+    private BorderPane rootPane;
+    @FXML
+    private StackPane contentArea;
+    @FXML
+    private FlowPane tableContainer;
+    @FXML
+    private VBox orderListContainer;
+    @FXML
+    private StackPane addTableModal;
+    @FXML
+    private AddTableController addTableModalController;
+    @FXML
+    private StackPane editTableModal;
+    @FXML
+    private EditTableController editTableModalController;
 
     // === REPOSITORIES ===
     private final OrderRepo orderRepo = new OrderRepo();
@@ -66,6 +80,25 @@ public class ManagerController {
         rootPane.setUserData(this);
         hideAllModals();
         showTableManager(null); // Mở mặc định Table Manager
+
+        // Close modals on blur
+        if (addTableModal != null) {
+            addTableModal.setOnMouseClicked(event -> {
+                if (event.getTarget() == addTableModal) {
+                    addTableModal.setVisible(false);
+                    addTableModal.setManaged(false);
+                }
+            });
+        }
+
+        if (editTableModal != null) {
+            editTableModal.setOnMouseClicked(event -> {
+                if (event.getTarget() == editTableModal) {
+                    editTableModal.setVisible(false);
+                    editTableModal.setManaged(false);
+                }
+            });
+        }
     }
 
     // === ẨN TẤT CẢ MODAL ===
@@ -110,14 +143,14 @@ public class ManagerController {
     @FXML
     public void showFoodManager() {
         hideAllViews();
-        if (menuManagementView == null) return;
+        if (menuManagementView == null)
+            return;
 
         try {
             menuManagementView.getChildren().clear();
 
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/example/restaurant_management/View/food-manager-view.fxml")
-            );
+                    getClass().getResource("/com/example/restaurant_management/View/food-manager-view.fxml"));
             AnchorPane foodView = loader.load();
 
             // Đảm bảo foodView chiếm hết không gian
@@ -156,7 +189,8 @@ public class ManagerController {
     }
 
     private void refreshOrderList() {
-        if (orderListContainer == null) return;
+        if (orderListContainer == null)
+            return;
 
         orderListContainer.getChildren().clear();
 
@@ -200,7 +234,8 @@ public class ManagerController {
         Label statusHeader = createHeaderLabel("Trạng Thái");
         Label actionHeader = createHeaderLabel("Thao Tác");
 
-        headerRow.getChildren().addAll(orderIdHeader, tableHeader, staffHeader, timeHeader, totalHeader, statusHeader, actionHeader);
+        headerRow.getChildren().addAll(orderIdHeader, tableHeader, staffHeader, timeHeader, totalHeader, statusHeader,
+                actionHeader);
         return headerRow;
     }
 
@@ -270,7 +305,8 @@ public class ManagerController {
         // Update status button (only for non-paid orders)
         if (!"DA_THANH_TOAN".equals(order.getTrangThai()) && !"DA_HUY".equals(order.getTrangThai())) {
             Button updateStatusBtn = new Button("Cập nhật");
-            updateStatusBtn.setStyle("-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 3;");
+            updateStatusBtn.setStyle(
+                    "-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 3;");
             updateStatusBtn.setOnAction(e -> showStatusUpdateDialog(order));
             actionBox.getChildren().add(updateStatusBtn);
         } else {
@@ -279,7 +315,8 @@ public class ManagerController {
             actionBox.getChildren().add(completedLabel);
         }
 
-        orderRow.getChildren().addAll(orderIdLabel, tableLabel, staffLabel, timeLabel, totalLabel, statusLabel, actionBox);
+        orderRow.getChildren().addAll(orderIdLabel, tableLabel, staffLabel, timeLabel, totalLabel, statusLabel,
+                actionBox);
         return orderRow;
     }
 
@@ -337,7 +374,7 @@ public class ManagerController {
         statusComboBox.getItems().addAll("DANG_PHUC_VU", "DA_THANH_TOAN");
         statusComboBox.setValue("DANG_PHUC_VU");
         statusComboBox.setPrefWidth(200);
-        
+
         // Create a cell factory to display Vietnamese names
         statusComboBox.setCellFactory(param -> new ListCell<String>() {
             @Override
@@ -350,7 +387,7 @@ public class ManagerController {
                 }
             }
         });
-        
+
         statusComboBox.setButtonCell(new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -436,7 +473,8 @@ public class ManagerController {
     // === MỞ MODAL THÊM BÀN ===
     @FXML
     public void displayAddTableForm() {
-        if (addTableModal == null || addTableModalController == null) return;
+        if (addTableModal == null || addTableModalController == null)
+            return;
 
         addTableModalController.setOnTableAdded(this::refreshTableList);
         addTableModalController.show();
@@ -448,7 +486,8 @@ public class ManagerController {
 
     // === MỞ MODAL SỬA BÀN ===
     public void showTableEditModal(Table table, Runnable onRefresh) {
-        if (editTableModal == null || editTableModalController == null) return;
+        if (editTableModal == null || editTableModalController == null)
+            return;
 
         editTableModalController.setTable(table);
         editTableModalController.setOnSaved(onRefresh);
@@ -472,21 +511,20 @@ public class ManagerController {
     @FXML
     public void showEmployeeManager(ActionEvent event) {
         hideAllViews();
-        if (customerView == null) return;
+        if (customerView == null)
+            return;
 
         try {
             customerView.getChildren().clear();
 
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/example/restaurant_management/View/employee-view.fxml")
-            );
+                    getClass().getResource("/com/example/restaurant_management/View/employee-view.fxml"));
             VBox employeeViewContent = loader.load();
             EmployeeController employeeController = loader.getController();
 
             // Setup modal cho employee
             FXMLLoader modalLoader = new FXMLLoader(
-                    getClass().getResource("/com/example/restaurant_management/View/add-employee-view.fxml")
-            );
+                    getClass().getResource("/com/example/restaurant_management/View/add-employee-view.fxml"));
             StackPane addEmployeeModal = modalLoader.load();
             AddEmployeeController addController = modalLoader.getController();
             addEmployeeModal.setVisible(false);
@@ -511,26 +549,24 @@ public class ManagerController {
         }
     }
 
-
     // === HIỂN THỊ INGREDIENT MANAGER ===
     @FXML
     public void showIngredientManager(ActionEvent event) {
         hideAllViews();
-        if (ingredientView == null) return;
+        if (ingredientView == null)
+            return;
 
         try {
             ingredientView.getChildren().clear();
 
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/example/restaurant_management/View/ingredient-view.fxml")
-            );
+                    getClass().getResource("/com/example/restaurant_management/View/ingredient-view.fxml"));
             VBox ingredientViewContent = loader.load();
             IngredientController ingredientController = loader.getController();
 
             // Setup modal cho ingredient
             FXMLLoader modalLoader = new FXMLLoader(
-                    getClass().getResource("/com/example/restaurant_management/View/add-ingredient-view.fxml")
-            );
+                    getClass().getResource("/com/example/restaurant_management/View/add-ingredient-view.fxml"));
             StackPane addIngredientModal = modalLoader.load();
             AddIngredientController addController = modalLoader.getController();
             addIngredientModal.setVisible(false);
@@ -555,7 +591,6 @@ public class ManagerController {
         }
     }
 
-
     // === HÀM HỖ TRỢ: ẨN/HIỆN NODE AN TOÀN ===
     private void setVisibleAndManaged(Pane pane, boolean visible) {
         if (pane != null) {
@@ -568,7 +603,6 @@ public class ManagerController {
     private void showError(String message) {
         new javafx.scene.control.Alert(
                 javafx.scene.control.Alert.AlertType.ERROR,
-                message
-        ).show();
+                message).show();
     }
 }

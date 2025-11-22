@@ -60,11 +60,6 @@ CREATE TABLE `khachhang` (
     PRIMARY KEY (`kh_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dữ liệu khachhang mẫu
-INSERT INTO `khachhang` (`ten_kh`, `sdt`, `email`) VALUES
-('Phạm Thị D', '0912345678', 'phamthiD@gmail.com'),
-('Ngô Văn E', '0923456789', 'ngovanE@gmail.com');
-
 -- ===============================
 -- Bảng ban
 -- ===============================
@@ -82,8 +77,10 @@ CREATE TABLE `ban` (
 -- Dữ liệu ban mẫu
 INSERT INTO `ban` (`so_ban`, `suc_chua`, `trang_thai`) VALUES
 (1, 4, 'TRONG'),
-(2, 2, 'DAT_TRUOC'),
-(3, 6, 'PHUC_VU');
+(2, 2, 'TRONG'),
+(3, 6, 'TRONG'),
+(4, 4, 'TRONG'),
+(5, 8, 'TRONG');
 
 -- ===============================
 -- Bảng monan
@@ -136,11 +133,6 @@ CREATE TABLE `datban` (
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dữ liệu datban mẫu
-INSERT INTO `datban` (`kh_id`, `ban_id`, `thoi_gian_dat`, `ghi_chu`, `trang_thai`) VALUES
-(1, 2, '2025-10-28 18:00:00', 'Đặt bàn cho 2 người', 'CHO_XAC_NHAN'),
-(2, 3, '2025-10-28 19:00:00', 'Bàn cạnh cửa sổ', 'DA_XAC_NHAN');
-
 -- ===============================
 -- Bảng orders
 -- ===============================
@@ -165,11 +157,6 @@ CREATE TABLE `orders` (
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dữ liệu orders mẫu
-INSERT INTO `orders` (`kh_id`, `nv_id`, `ban_id`, `thoi_gian`, `tong_tien`, `trang_thai`) VALUES
-(1, 2, 1, '2025-10-28 12:00:00', 70000, 'MOI'),
-(2, 2, 3, '2025-10-28 12:30:00', 35000, 'DANG_PHUC_VU');
-
 -- ===============================
 -- Bảng order_chitiet
 -- ===============================
@@ -181,6 +168,7 @@ CREATE TABLE `order_chitiet` (
     `so_luong` int DEFAULT NULL,
     `don_gia` decimal(10,2) DEFAULT NULL,
     `thanh_tien` decimal(12,2) GENERATED ALWAYS AS ((`so_luong` * `don_gia`)) STORED,
+    `batch_id` int DEFAULT 1,
     PRIMARY KEY (`order_ct_id`),
     KEY `order_id` (`order_id`),
     KEY `mon_id` (`mon_id`),

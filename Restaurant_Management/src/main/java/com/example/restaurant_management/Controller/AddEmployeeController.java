@@ -18,15 +18,24 @@ import java.util.Map;
 
 public class AddEmployeeController {
 
-    @FXML private StackPane modalRoot;
-    @FXML private VBox modalContainer;
-    @FXML private Label titleLabel;
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private TextField fullNameField;
-    @FXML private TextField phoneField;
-    @FXML private TextField emailField;
-    @FXML private ComboBox<String> roleComboBox;
+    @FXML
+    private StackPane modalRoot;
+    @FXML
+    private VBox modalContainer;
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private TextField fullNameField;
+    @FXML
+    private TextField phoneField;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private ComboBox<String> roleComboBox;
 
     private Runnable onEmployeeAdded; // callback sau khi thêm/sửa xong
     private Employee currentEmployee; // null nếu là thêm mới, có giá trị nếu là sửa
@@ -41,6 +50,13 @@ public class AddEmployeeController {
         StackPane.setAlignment(modalContainer, javafx.geometry.Pos.CENTER);
         // Đảm bảo modal root được căn giữa
         modalRoot.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // Close on blur (click outside)
+        modalRoot.setOnMouseClicked(event -> {
+            if (event.getTarget() == modalRoot) {
+                hide();
+            }
+        });
     }
 
     private void loadRoles() {
@@ -66,7 +82,7 @@ public class AddEmployeeController {
             fullNameField.setText(employee.getFullName());
             phoneField.setText(employee.getPhone());
             emailField.setText(employee.getEmail());
-            
+
             // Set role
             if (employee.getRoleId() != null) {
                 for (Map<String, Object> role : roles) {
@@ -90,17 +106,17 @@ public class AddEmployeeController {
             new Alert(Alert.AlertType.WARNING, "Vui lòng nhập username").showAndWait();
             return;
         }
-        
+
         if (passwordField.getText().trim().isEmpty()) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng nhập password").showAndWait();
             return;
         }
-        
+
         if (fullNameField.getText().trim().isEmpty()) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng nhập họ tên").showAndWait();
             return;
         }
-        
+
         if (roleComboBox.getValue() == null) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng chọn vai trò").showAndWait();
             return;
@@ -116,11 +132,11 @@ public class AddEmployeeController {
                 employee.setFullName(fullNameField.getText().trim());
                 employee.setPhone(phoneField.getText().trim());
                 employee.setEmail(emailField.getText().trim());
-                
+
                 // Lấy roleId từ roleName
                 Integer roleId = getRoleIdByName(roleComboBox.getValue());
                 employee.setRoleId(roleId);
-                
+
                 boolean success = employeeRepo.insert(employee);
                 if (success) {
                     new Alert(Alert.AlertType.INFORMATION, "Thêm nhân viên thành công!").showAndWait();
@@ -130,7 +146,8 @@ public class AddEmployeeController {
                     }
                     hide();
                 } else {
-                    new Alert(Alert.AlertType.ERROR, "Thêm nhân viên thất bại! Có thể username đã tồn tại.").showAndWait();
+                    new Alert(Alert.AlertType.ERROR, "Thêm nhân viên thất bại! Có thể username đã tồn tại.")
+                            .showAndWait();
                 }
             } else {
                 // Sửa
@@ -139,11 +156,11 @@ public class AddEmployeeController {
                 currentEmployee.setFullName(fullNameField.getText().trim());
                 currentEmployee.setPhone(phoneField.getText().trim());
                 currentEmployee.setEmail(emailField.getText().trim());
-                
+
                 // Lấy roleId từ roleName
                 Integer roleId = getRoleIdByName(roleComboBox.getValue());
                 currentEmployee.setRoleId(roleId);
-                
+
                 boolean success = employeeRepo.update(currentEmployee);
                 if (success) {
                     new Alert(Alert.AlertType.INFORMATION, "Sửa nhân viên thành công!").showAndWait();
@@ -169,7 +186,7 @@ public class AddEmployeeController {
         }
         return null;
     }
-    
+
     private void clearForm() {
         usernameField.clear();
         passwordField.clear();
@@ -202,4 +219,3 @@ public class AddEmployeeController {
         modalRoot.setMouseTransparent(true);
     }
 }
-

@@ -28,10 +28,18 @@ public class TableService {
 
     // ======== Dành cho nhân viên phục vụ ========
     public static void updateTableList(FlowPane tableList, List<Table> tables) {
-        updateTableList(tableList, tables, t -> {});
+        updateTableList(tableList, tables, t -> {
+        });
     }
 
-    public static void updateTableList(FlowPane tableList, List<Table> tables, Consumer<Table> onTableClicked) {
+    public static void updateTableList(FlowPane tableList, List<Table> tables,
+            Consumer<Table> onTableClicked) {
+        // Ensure UI updates happen on JavaFX Application Thread
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> updateTableList(tableList, tables, onTableClicked));
+            return;
+        }
+
         // Xóa nội dung cũ
         tableList.getChildren().clear();
 
@@ -61,47 +69,57 @@ public class TableService {
             card.getChildren().addAll(lblSoBan, lblTrangThai);
 
             // Hiệu ứng hover
-            card.setOnMouseEntered(e ->
-                    card.setStyle(card.getStyle() + "-fx-scale-x: 1.05; -fx-scale-y: 1.05; "
-                            + "-fx-effect: dropshadow(gaussian, rgba(255,145,77,0.4), 12, 0, 0, 3);"));
-            card.setOnMouseExited(e ->
-                    card.setStyle("-fx-background-color: white; -fx-background-radius: 10; "
-                            + "-fx-padding: 10; -fx-cursor: hand; "
-                            + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);"));
+            card.setOnMouseEntered(e -> card.setStyle(card.getStyle() + "-fx-scale-x: 1.05; -fx-scale-y: 1.05; "
+                    + "-fx-effect: dropshadow(gaussian, rgba(255,145,77,0.4), 12, 0, 0, 3);"));
+            card.setOnMouseExited(e -> card.setStyle("-fx-background-color: white; -fx-background-radius: 10; "
+                    + "-fx-padding: 10; -fx-cursor: hand; "
+                    + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);"));
 
-            Platform.runLater(() ->
-                    card.prefWidthProperty().bind(tableList.widthProperty().subtract(80).divide(3))
-            );
+            Platform.runLater(() -> card.prefWidthProperty().bind(tableList.widthProperty().subtract(80).divide(3)));
 
             // Sự kiện click
             card.setOnMouseClicked(e -> {
                 try {
-                    // Check if table has an active order
-                    com.example.restaurant_management.entityRepo.OrderRepo orderRepo = 
-                        new com.example.restaurant_management.entityRepo.OrderRepo();
-                    com.example.restaurant_management.entity.Order activeOrder = 
-                        orderRepo.findActiveOrderByTableId(table.getTableId());
+                    // Get owner window dynamically
+                    javafx.stage.Window owner = tableList.getScene().getWindow();
 
-                    if (activeOrder != null && (activeOrder.getTrangThai().equals("MOI") || 
-                        activeOrder.getTrangThai().equals("DANG_PHUC_VU"))) {
+                    // Check if table has an active order
+                    com.example.restaurant_management.entityRepo.OrderRepo orderRepo = new com.example.restaurant_management.entityRepo.OrderRepo();
+                    com.example.restaurant_management.entity.Order activeOrder = orderRepo
+                            .findActiveOrderByTableId(table.getTableId());
+
+                    if (activeOrder != null && (activeOrder.getTrangThai().equals("MOI") ||
+                            activeOrder.getTrangThai().equals("DANG_PHUC_VU"))) {
                         // Table has active order - open payment screen
                         FXMLLoader loader = new FXMLLoader(
-                                TableService.class.getResource("/com/example/restaurant_management/View/PaymentView.fxml")
-                        );
+                                TableService.class
+                                        .getResource("/com/example/restaurant_management/View/PaymentView.fxml"));
                         Parent root = loader.load();
 
-                        com.example.restaurant_management.Controller.PaymentController controller = loader.getController();
+                        com.example.restaurant_management.Controller.PaymentController controller = loader
+                                .getController();
                         controller.setTableInfo(table);
 
                         Stage stage = new Stage();
                         stage.setTitle("Thanh toán - Bàn " + table.getTableNumber());
                         stage.setScene(new Scene(root));
+
+                        // Strict Lifecycle Binding
+                        if (owner != null) {
+                            stage.initOwner(owner);
+                            // Force close if parent closes
+                            owner.setOnHidden(event -> stage.close());
+                        }
+
+                        // Auto close on blur
+                        com.example.restaurant_management.utils.StageUtils.autoCloseOnBlur(stage);
+
                         stage.show();
                     } else {
                         // No active order - open order screen
                         FXMLLoader loader = new FXMLLoader(
-                                TableService.class.getResource("/com/example/restaurant_management/View/OrderSummaryView.fxml")
-                        );
+                                TableService.class
+                                        .getResource("/com/example/restaurant_management/View/OrderSummaryView.fxml"));
                         Parent root = loader.load();
 
                         OrderSummaryController controller = loader.getController();
@@ -110,6 +128,17 @@ public class TableService {
                         Stage stage = new Stage();
                         stage.setTitle("Order - Bàn " + table.getTableNumber());
                         stage.setScene(new Scene(root));
+
+                        // Strict Lifecycle Binding
+                        if (owner != null) {
+                            stage.initOwner(owner);
+                            // Force close if parent closes
+                            owner.setOnHidden(event -> stage.close());
+                        }
+
+                        // Auto close on blur
+                        com.example.restaurant_management.utils.StageUtils.autoCloseOnBlur(stage);
+
                         stage.show();
                     }
 
@@ -128,8 +157,10 @@ public class TableService {
         tableList.getChildren().clear();
 
         // Gắn stylesheet nếu chưa có
-        URL stylesheetUrl = TableService.class.getResource("../../../src/main/resources/com/example/restaurant_management/CSS/table.css");
-        if (stylesheetUrl != null && tableList.getStylesheets().stream().noneMatch(s -> s.equals(stylesheetUrl.toExternalForm()))) {
+        URL stylesheetUrl = TableService.class
+                .getResource("../../../src/main/resources/com/example/restaurant_management/CSS/table.css");
+        if (stylesheetUrl != null
+                && tableList.getStylesheets().stream().noneMatch(s -> s.equals(stylesheetUrl.toExternalForm()))) {
             tableList.getStylesheets().add(stylesheetUrl.toExternalForm());
         }
 
@@ -162,9 +193,7 @@ public class TableService {
 
             card.getChildren().addAll(lblSoBan, lblTrangThai, actions);
 
-            Platform.runLater(() ->
-                    card.prefWidthProperty().bind(tableList.widthProperty().subtract(85).divide(3))
-            );
+            Platform.runLater(() -> card.prefWidthProperty().bind(tableList.widthProperty().subtract(85).divide(3)));
 
             tableList.getChildren().add(card);
         }
@@ -186,7 +215,8 @@ public class TableService {
             alert.setContentText(success ? "Đã xóa bàn thành công!" : "Không thể xóa bàn.");
             alert.showAndWait();
 
-            if (onRefresh != null) onRefresh.run();
+            if (onRefresh != null)
+                onRefresh.run();
         }
     }
 
