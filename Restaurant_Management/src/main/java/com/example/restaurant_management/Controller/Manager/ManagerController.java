@@ -591,6 +591,46 @@ public class ManagerController {
         }
     }
 
+    // === HIỂN THỊ REPORT VIEW ===
+    @FXML
+    public void showReportView(ActionEvent event) {
+        hideAllViews();
+        if (reportView == null)
+            return;
+
+        try {
+            reportView.getChildren().clear();
+
+            java.net.URL fxmlUrl = getClass().getResource("/com/example/restaurant_management/View/report-view.fxml");
+            if (fxmlUrl == null) {
+                showError("Không tìm thấy file report-view.fxml!");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            VBox reportViewContent = loader.load();
+
+            VBox.setVgrow(reportViewContent, Priority.ALWAYS);
+            HBox.setHgrow(reportViewContent, Priority.ALWAYS);
+            reportViewContent.setMaxWidth(Double.MAX_VALUE);
+            reportViewContent.setMaxHeight(Double.MAX_VALUE);
+
+            reportView.getChildren().add(reportViewContent);
+            reportView.setVisible(true);
+            reportView.setManaged(true);
+            reportView.toFront();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            String errorMsg = "Không thể tải giao diện báo cáo!\n" + 
+                            "Chi tiết: " + e.getMessage();
+            if (e.getCause() != null) {
+                errorMsg += "\nNguyên nhân: " + e.getCause().getMessage();
+            }
+            showError(errorMsg);
+        }
+    }
+
     // === HÀM HỖ TRỢ: ẨN/HIỆN NODE AN TOÀN ===
     private void setVisibleAndManaged(Pane pane, boolean visible) {
         if (pane != null) {
