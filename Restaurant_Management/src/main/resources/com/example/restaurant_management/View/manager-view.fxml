@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -36,7 +37,7 @@
                     <Button fx:id="menuBtn"  onAction="#showFoodManager" prefHeight="42.0" prefWidth="290.0" styleClass="menu-button" text="Quản lý Món" />
                     <Button fx:id="customerBtn" onAction="#showEmployeeManager" prefHeight="42.0" prefWidth="276.0" styleClass="menu-button" text="Quản lý Nhân Viên" />
                     <Button fx:id="dashboardBtn" onAction="#showIngredientManager" prefHeight="42.0" prefWidth="312.0" styleClass="menu-button" text="Quản lý Nguyên Liệu" />
-                    <Button fx:id="reportBtn" prefHeight="42.0" prefWidth="325.0" styleClass="menu-button" text="Báo cáo" />
+                    <Button fx:id="reportBtn" onAction="#showReportView" prefHeight="42.0" prefWidth="325.0" styleClass="menu-button" text="Báo cáo" />
                 </VBox>
 
                 <!-- Logout Button -->
@@ -74,6 +75,10 @@
                         <HBox alignment="CENTER_LEFT" spacing="15">
                             <Label styleClass="page-title" text="Quản lý Đơn Hàng" />
                             <Button fx:id="refreshOrderBtn" onAction="#refreshOrderList" styleClass="add-button" text="Làm mới" />
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label styleClass="filter-label" text="Lọc theo thời gian:" />
+                            <ComboBox fx:id="orderFilterCombo" prefWidth="180.0" promptText="Tất cả" />
                         </HBox>
                         <ScrollPane fitToWidth="true" styleClass="order-list-container">
                             <VBox fx:id="orderListContainer" spacing="10" />
@@ -118,13 +123,7 @@
 
                 <!-- Reports View -->
                 <VBox fx:id="reportView" spacing="20" styleClass="content-view" visible="false">
-                    <padding>
-                        <Insets bottom="30" left="30" right="30" top="30" />
-                    </padding>
-                    <children>
-                        <Label styleClass="page-title" text="Báo Cáo  Thống Kê" />
-                        <Label styleClass="info-label" text="Tính năng đang phát triển..." />
-                    </children>
+                    <!-- Content will be loaded dynamically by ManagerController -->
                 </VBox>
 
                 <!-- ============ Modal Add Table (overlay) ============ -->

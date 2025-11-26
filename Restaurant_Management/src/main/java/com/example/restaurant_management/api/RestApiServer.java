@@ -514,7 +514,8 @@ public class RestApiServer {
                 boolean hasReadyItems = false;
                 List<OrderDetail> details = orderDetailRepo.findByOrderId(order.getOrderId());
                 for (OrderDetail detail : details) {
-                    if ("READY".equals(detail.getTrangThai())) {
+                    String status = detail.getTrangThai();
+                    if (status != null && "READY".equals(status)) {
                         hasReadyItems = true;
                         break;
                     }
@@ -732,7 +733,7 @@ public class RestApiServer {
                         itemJson.addProperty("quantity", detail.getSoLuong());
                         itemJson.addProperty("unitPrice", detail.getDonGia());
                         itemJson.addProperty("total", detail.getThanhTien());
-                        itemJson.addProperty("status", detail.getTrangThai());
+                        itemJson.addProperty("status", detail.getTrangThai() != null ? detail.getTrangThai() : "");
                         itemsList.add(itemJson);
                     }
                 }
