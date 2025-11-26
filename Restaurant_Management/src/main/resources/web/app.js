@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTables();
     loadMenu();
     loadActiveOrders();
-    loadActiveOrders();
     syncCartPanelState();
 
     // Initialize WebSocket
@@ -147,36 +146,57 @@ function switchView(view) {
     }
 }
 
-// Load tables
+// Load tables with Debounce and Locking
+let isFetchingTables = false;
+let loadTablesTimeout = null;
+
 async function loadTables() {
-    try {
-        const response = await apiRequest('/api/tables');
-        if (!response.ok) throw new Error('Failed to load tables');
+    // Debounce: Wait 300ms before fetching
+    if (loadTablesTimeout) clearTimeout(loadTablesTimeout);
 
-        tables = await response.json();
-        const select = document.getElementById('tableSelect');
+    loadTablesTimeout = setTimeout(async () => {
+        if (isFetchingTables) return; // Locking
+        isFetchingTables = true;
 
-        select.innerHTML = '<option value="">Chọn bàn...</option>';
-        tables.forEach(table => {
-            const option = document.createElement('option');
-            option.value = table.id;
+        try {
+            const response = await apiRequest('/api/tables');
+            if (!response.ok) throw new Error('Failed to load tables');
 
-            const isOccupied = table.status !== 'TRONG';
-            const statusText = isOccupied ? ' (Đang phục vụ)' : ' (Trống)';
+            tables = await response.json();
+            const select = document.getElementById('tableSelect');
 
-            option.textContent = `Bàn ${table.number}${statusText}`;
+            // Save current selection
+            const currentSelection = select.value;
 
-            // Disable occupied tables to prevent duplicate orders
-            if (isOccupied) {
-                option.disabled = true;
-                option.classList.add('text-slate-400', 'bg-slate-50'); // Optional styling hint
+            select.innerHTML = '<option value="">Chọn bàn...</option>';
+            tables.forEach(table => {
+                const option = document.createElement('option');
+                option.value = table.id;
+
+                const isOccupied = table.status !== 'TRONG';
+                const statusText = isOccupied ? ' (Đang phục vụ)' : ' (Trống)';
+
+                option.textContent = `Bàn ${table.number}${statusText}`;
+
+                // Disable occupied tables to prevent duplicate orders
+                if (isOccupied) {
+                    option.disabled = true;
+                    option.classList.add('text-slate-400', 'bg-slate-50'); // Optional styling hint
+                }
+
+                select.appendChild(option);
+            });
+
+            // Restore selection if valid
+            if (currentSelection) {
+                select.value = currentSelection;
             }
-
-            select.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Error loading tables:', error);
-    }
+        } catch (error) {
+            console.error('Error loading tables:', error);
+        } finally {
+            isFetchingTables = false;
+        }
+    }, 300);
 }
 
 // Load menu
@@ -364,7 +384,7 @@ function getMenuItemActionHtml(item, quantity) {
         `;
     } else {
         return `
-            <button class="w-full py-2 px-4 bg-slate-900 text-white rounded-xl text-sm font-semibold shadow-lg shadow-slate-900/10 hover:bg-slate-800 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all" data-action="add" data-id="${item.id}" ${!isAvailable ? 'disabled' : ''}>
+            <button class="btn-add w-full py-2 px-4 bg-slate-900 text-white rounded-xl text-sm font-semibold shadow-lg shadow-slate-900/10 hover:bg-slate-800 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all" data-action="add" data-id="${item.id}" ${!isAvailable ? 'disabled' : ''}>
                 ${isAvailable ? 'Thêm' : 'Hết'}
             </button>
         `;
@@ -373,7 +393,9 @@ function getMenuItemActionHtml(item, quantity) {
 
 function updateMenuItem(foodId) {
     const item = menuItems.find(m => m.id === foodId);
-    if (!item) return;
+    if (!item) {
+        return;
+    }
 
     const cartItem = cart.find(c => c.foodId === foodId);
     const quantity = cartItem ? cartItem.quantity : 0;
@@ -381,6 +403,7 @@ function updateMenuItem(foodId) {
     const actionContainer = document.getElementById(`action-${foodId}`);
     if (actionContainer) {
         actionContainer.innerHTML = getMenuItemActionHtml(item, quantity);
+    } else {
     }
 }
 
@@ -659,17 +682,22 @@ async function submitOrder() {
     }
 }
 
-// Load active orders
+// Load active orders with Locking
+let isFetchingOrders = false;
+
 async function loadActiveOrders() {
     const loading = document.getElementById('ordersLoading');
     const error = document.getElementById('ordersError');
     const container = document.getElementById('ordersList');
 
     if (currentView !== 'orders') return;
+    if (isFetchingOrders) return; // Locking
 
+    isFetchingOrders = true;
     loading.classList.remove('hidden');
     error.classList.add('hidden');
-    container.innerHTML = '';
+    // Don't clear container immediately to avoid flicker if just refreshing
+    // container.innerHTML = ''; 
 
     try {
         const response = await apiRequest('/api/orders/active');
@@ -683,20 +711,28 @@ async function loadActiveOrders() {
         loading.classList.add('hidden');
         error.classList.remove('hidden');
         error.textContent = `Lỗi: ${err.message}`;
+    } finally {
+        isFetchingOrders = false;
     }
 }
 
-// Refresh orders with loading state
+// Refresh orders with Debounce
+let refreshOrdersTimeout = null;
+
 async function refreshOrders() {
-    const btn = document.getElementById('refreshOrdersBtn');
+    if (refreshOrdersTimeout) clearTimeout(refreshOrdersTimeout);
 
-    btn.disabled = true;
-    btn.innerHTML = '<span>⏳</span> <span class="hidden sm:inline">Đang tải...</span>';
+    refreshOrdersTimeout = setTimeout(async () => {
+        const btn = document.getElementById('refreshOrdersBtn');
 
-    await loadActiveOrders();
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span> <span class="hidden sm:inline">Đang tải...</span>';
 
-    btn.disabled = false;
-    btn.innerHTML = '<span>🔄</span> <span class="hidden sm:inline">Làm mới</span>';
+        await loadActiveOrders();
+
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔄</span> <span class="hidden sm:inline">Làm mới</span>';
+    }, 300);
 }
 
 // Render orders list
@@ -1198,8 +1234,33 @@ async function addItemsToOrder() {
     if (!currentOrderId || addItemsCart.length === 0) return;
 
     const btn = document.getElementById('addItemsBtn');
+    const originalBtnText = btn.textContent;
     btn.disabled = true;
-    btn.textContent = 'Đang xử lý...';
+    btn.textContent = 'Đang gửi...';
+
+    // Optimistic UI: Add temporary items to the list immediately
+    const itemsDiv = document.getElementById('orderDetailItems');
+    const tempItems = addItemsCart.map(item => {
+        const tempDiv = document.createElement('div');
+        tempDiv.className = 'flex justify-between items-center py-3 border-b border-slate-50 last:border-0 opacity-60';
+        tempDiv.innerHTML = `
+            <div class="flex-1">
+                <div class="flex items-center gap-2">
+                    <div class="font-medium text-slate-900 text-sm">${escapeHtml(item.name)}</div>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full animate-pulse">Đang gửi...</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5">${item.quantity} x ${formatPrice(item.price)} đ</div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="font-bold text-slate-900 text-sm">${formatPrice(item.price * item.quantity)} đ</div>
+            </div>
+        `;
+        itemsDiv.appendChild(tempDiv);
+        return tempDiv;
+    });
+
+    // Scroll to bottom to show new items
+    itemsDiv.scrollTop = itemsDiv.scrollHeight;
 
     try {
         const response = await apiRequest(`/api/orders/${currentOrderId}/items`, {
@@ -1217,21 +1278,27 @@ async function addItemsToOrder() {
             throw new Error(error.error || 'Failed to add items');
         }
 
-        // Clear cart
+        // Success: Clear cart and refresh (which will replace temp items with real ones)
         addItemsCart = [];
         document.getElementById('addItemSearch').value = '';
 
-        // Refresh order detail
+        // Refresh order detail (this will re-render the list with real data)
         await viewOrderDetail(currentOrderId);
 
         // Refresh orders list
         await refreshOrders();
 
+        showNotification('Đã thêm món thành công', 'success');
+
     } catch (error) {
+        console.error('Error adding items:', error);
         alert(`Lỗi: ${error.message}`);
-    } finally {
+
+        // Rollback: Remove temp items
+        tempItems.forEach(div => div.remove());
+
         btn.disabled = false;
-        btn.textContent = 'Thêm vào đơn hàng';
+        btn.textContent = originalBtnText;
     }
 }
 

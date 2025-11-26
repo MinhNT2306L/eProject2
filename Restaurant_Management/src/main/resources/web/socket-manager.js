@@ -11,7 +11,11 @@ const SocketManager = (function () {
     let shouldReconnect = true;
 
     function createInstance() {
-        const WS_URL = "ws://localhost:8887";
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const hostname = window.location.hostname;
+        const port = '8887';
+        const WS_URL = `${protocol}://${hostname}:${port}`;
+        console.log("Connecting to Socket at:", WS_URL);
 
         function connect() {
             console.log("Connecting to WebSocket...");

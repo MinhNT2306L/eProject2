@@ -129,9 +129,38 @@ body {
     line-height: 1.5;
 }
 
-button {
+button,
+.clickable,
+a,
+input[type="checkbox"],
+input[type="radio"],
+select,
+.nav-tab,
+.ticket-card {
     touch-action: manipulation;
     /* Remove 300ms delay on mobile */
+    -webkit-tap-highlight-color: transparent;
+    /* Remove default OS blue overlay */
+    cursor: pointer;
+}
+
+/* Active state for immediate feedback */
+button:active,
+.clickable:active,
+a:active,
+.nav-tab:active,
+.ticket-card:active {
+    transform: scale(0.96);
+    opacity: 0.8;
+    transition: transform 0.05s ease-out;
+}
+
+/* Ensure minimum touch target size */
+button,
+.clickable,
+.nav-tab {
+    min-height: 44px;
+    min-width: 44px;
 }
 
 .login-container {
@@ -325,4 +354,40 @@ button {
 
 .cart-fab.bump {
     animation: bump 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+/* -------- Mobile Optimizations -------- */
+.btn-add {
+    position: relative;
+    /* Ensure it's above other elements */
+    z-index: 10;
+    /* Minimum touch target size */
+    min-height: 44px;
+    min-width: 44px;
+    /* Prevent zoom on double tap */
+    touch-action: manipulation;
+    /* Center content */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Invisible shield for larger hit area if needed, though min-height usually suffices */
+.btn-add::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    bottom: -10px;
+    left: -10px;
+    right: -10px;
+    background: transparent;
+    z-index: -1;
+}
+
+.btn-add:active {
+    transform: scale(0.95);
+    /* Physical shrink effect */
+    opacity: 0.8;
+    transition: transform 0.05s ease-out;
+    /* Instant response */
 }

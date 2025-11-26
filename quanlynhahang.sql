@@ -48,19 +48,6 @@ INSERT INTO `nhanvien` (`username`, `password`, `full_name`, `phone`, `email`, `
 ('staff01', 'staff123', 'Trần Thị N', '0909234567', 'staff@nhahang.com', 2);
 
 -- ===============================
--- Bảng khachhang
--- ===============================
-DROP TABLE IF EXISTS `khachhang`;
-CREATE TABLE `khachhang` (
-    `kh_id` int NOT NULL AUTO_INCREMENT,
-    `ten_kh` varchar(100) NOT NULL,
-    `sdt` varchar(20) DEFAULT NULL,
-    `email` varchar(100) DEFAULT NULL,
-    `ngay_tao` datetime DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`kh_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ===============================
 -- Bảng ban
 -- ===============================
 DROP TABLE IF EXISTS `ban`;
