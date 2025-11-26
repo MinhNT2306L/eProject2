@@ -27,10 +27,14 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ManagerController {
 
@@ -60,6 +64,8 @@ public class ManagerController {
     @FXML
     private VBox orderListContainer;
     @FXML
+    private ComboBox<String> orderFilterCombo;
+    @FXML
     private StackPane addTableModal;
     @FXML
     private AddTableController addTableModalController;
@@ -74,11 +80,16 @@ public class ManagerController {
     private final Map<Integer, Employee> employeeCache = new HashMap<>();
     private final Map<Integer, Table> tableCache = new HashMap<>();
 
+    private static final String FILTER_ALL = "Tất cả";
+    private static final String FILTER_TODAY = "Hôm nay";
+    private static final String FILTER_WEEK = "Tuần này";
+
     // === KHỞI TẠO ===
     @FXML
     public void initialize() {
         rootPane.setUserData(this);
         hideAllModals();
+        setupOrderFilterCombo();
         showTableManager(null); // Mở mặc định Table Manager
 
         // Close modals on blur
@@ -196,8 +207,9 @@ public class ManagerController {
 
         try {
             List<Order> orders = orderRepo.getAllOrders();
+            List<Order> filteredOrders = applyOrderFilter(orders);
 
-            if (orders.isEmpty()) {
+            if (filteredOrders.isEmpty()) {
                 Label noOrdersLabel = new Label("Chưa có đơn hàng nào");
                 noOrdersLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #7F8C8D;");
                 orderListContainer.getChildren().add(noOrdersLabel);
@@ -209,7 +221,7 @@ public class ManagerController {
             orderListContainer.getChildren().add(headerRow);
 
             // Create order rows
-            for (Order order : orders) {
+            for (Order order : filteredOrders) {
                 HBox orderRow = createOrderRow(order);
                 orderListContainer.getChildren().add(orderRow);
             }
@@ -218,6 +230,52 @@ public class ManagerController {
             e.printStackTrace();
             showError("Lỗi khi tải danh sách đơn hàng: " + e.getMessage());
         }
+    }
+
+    private void setupOrderFilterCombo() {
+        if (orderFilterCombo == null) {
+            return;
+        }
+        orderFilterCombo.getItems().setAll(FILTER_ALL, FILTER_TODAY, FILTER_WEEK);
+        if (orderFilterCombo.getValue() == null) {
+            orderFilterCombo.getSelectionModel().select(FILTER_ALL);
+        }
+        orderFilterCombo.valueProperty().addListener((obs, oldVal, newVal) -> refreshOrderList());
+    }
+
+    private List<Order> applyOrderFilter(List<Order> orders) {
+        if (orderFilterCombo == null || orderFilterCombo.getValue() == null) {
+            return orders;
+        }
+        String selected = orderFilterCombo.getValue();
+
+        if (FILTER_ALL.equals(selected)) {
+            return orders;
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime start;
+        LocalDateTime end;
+
+        if (FILTER_TODAY.equals(selected)) {
+            start = today.atStartOfDay();
+            end = today.plusDays(1).atStartOfDay();
+        } else if (FILTER_WEEK.equals(selected)) {
+            LocalDate weekStart = today.with(DayOfWeek.MONDAY);
+            start = weekStart.atStartOfDay();
+            end = weekStart.plusDays(7).atStartOfDay();
+        } else {
+            return orders;
+        }
+
+        LocalDateTime finalStart = start;
+        LocalDateTime finalEnd = end;
+        return orders.stream()
+                .filter(order -> {
+                    LocalDateTime orderTime = order.getThoiGian();
+                    return orderTime != null && !orderTime.isBefore(finalStart) && orderTime.isBefore(finalEnd);
+                })
+                .collect(Collectors.toList());
     }
 
     // === TẠO HEADER ROW ===

@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -15,16 +16,19 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class IngredientController {
 
     private final IngredientRepo ingredientRepo = new IngredientRepo(new IngredientMapper());
     
     @FXML private VBox ingredientListContainer;
+    @FXML private ComboBox<String> ingredientFilterCombo;
     
     // Modal sẽ được lấy từ ManagerController
     private AddIngredientController addIngredientModalController;
@@ -36,6 +40,10 @@ public class IngredientController {
         this.addIngredientModalController = controller;
     }
 
+    private static final String FILTER_ALL = "Tất cả";
+    private static final String FILTER_TODAY = "Hôm nay";
+    private static final String FILTER_WEEK = "Tuần này";
+
     @FXML
     private VBox ingredientViewRoot; // Root của view này
     
@@ -45,6 +53,7 @@ public class IngredientController {
         if (ingredientViewRoot != null) {
             ingredientViewRoot.setUserData(this);
         }
+        setupFilterCombo();
         loadIngredientData();
     }
 
@@ -60,6 +69,7 @@ public class IngredientController {
         
         try {
             List<Ingredient> ingredients = ingredientRepo.findAllIngredients();
+            ingredients = applyFilter(ingredients);
             
             if (ingredients.isEmpty()) {
                 Label emptyLabel = new Label("Chưa có nguyên liệu nào");
@@ -79,6 +89,52 @@ public class IngredientController {
             errorLabel.setStyle("-fx-text-fill: red;");
             ingredientListContainer.getChildren().add(errorLabel);
         }
+    }
+
+    private void setupFilterCombo() {
+        if (ingredientFilterCombo == null) {
+            return;
+        }
+        ingredientFilterCombo.getItems().setAll(FILTER_ALL, FILTER_TODAY, FILTER_WEEK);
+        if (ingredientFilterCombo.getValue() == null) {
+            ingredientFilterCombo.getSelectionModel().select(FILTER_ALL);
+        }
+        ingredientFilterCombo.valueProperty().addListener((obs, oldVal, newVal) -> loadIngredientData());
+    }
+
+    private List<Ingredient> applyFilter(List<Ingredient> ingredients) {
+        if (ingredientFilterCombo == null || ingredientFilterCombo.getValue() == null) {
+            return ingredients;
+        }
+
+        String selected = ingredientFilterCombo.getValue();
+        if (FILTER_ALL.equals(selected)) {
+            return ingredients;
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate start;
+        LocalDate end;
+
+        if (FILTER_TODAY.equals(selected)) {
+            start = today;
+            end = today.plusDays(1);
+        } else if (FILTER_WEEK.equals(selected)) {
+            LocalDate weekStart = today.with(DayOfWeek.MONDAY);
+            start = weekStart;
+            end = weekStart.plusDays(7);
+        } else {
+            return ingredients;
+        }
+
+        LocalDate finalStart = start;
+        LocalDate finalEnd = end;
+        return ingredients.stream()
+                .filter(ingredient -> {
+                    LocalDate importDate = ingredient.getImportDate();
+                    return importDate != null && !importDate.isBefore(finalStart) && importDate.isBefore(finalEnd);
+                })
+                .collect(Collectors.toList());
     }
 
     private HBox createIngredientCard(Ingredient ingredient, DateTimeFormatter formatter) {
@@ -220,6 +276,11 @@ public class IngredientController {
                 alert.showAndWait();
             }
         }
+    }
+
+    @FXML
+    private void handleIngredientRefresh() {
+        loadIngredientData();
     }
 }
 
