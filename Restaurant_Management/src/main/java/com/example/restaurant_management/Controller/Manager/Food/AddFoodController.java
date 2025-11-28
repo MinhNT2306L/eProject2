@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 
+import java.util.regex.Pattern;
+
 public class AddFoodController {
 
     @FXML private TextField txtName;
@@ -21,6 +23,7 @@ public class AddFoodController {
 
     private final FoodRepo foodRepo = new FoodRepo(new FoodMapper());
     private Runnable onSavedCallback;
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L} ]+$");
 
     @FXML
     public void initialize() {
@@ -60,10 +63,31 @@ public class AddFoodController {
     }
 
     private boolean validate() {
-        if (txtName.getText().trim().isEmpty()) {
+        String name = txtName.getText().trim();
+        if (name.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Vui lòng nhập tên món!");
             return false;
         }
+        if (!NAME_PATTERN.matcher(name).matches()) {
+            showAlert(Alert.AlertType.WARNING, "Tên món chỉ được chứa chữ và khoảng trắng!");
+            return false;
+        }
+
+        String category = txtCategory.getText().trim();
+        if (category.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Vui lòng nhập loại món!");
+            return false;
+        }
+        if (!NAME_PATTERN.matcher(category).matches()) {
+            showAlert(Alert.AlertType.WARNING, "Loại món chỉ được chứa chữ và khoảng trắng!");
+            return false;
+        }
+
+        if (cbStatus.getValue() == null) {
+            showAlert(Alert.AlertType.WARNING, "Vui lòng chọn trạng thái!");
+            return false;
+        }
+
         try {
             double price = Double.parseDouble(txtPrice.getText().trim());
             if (price < 0) {

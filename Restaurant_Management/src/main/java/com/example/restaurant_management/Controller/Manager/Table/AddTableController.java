@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import java.util.regex.Pattern;
+
 public class AddTableController {
 
     @FXML private StackPane modalRoot;
@@ -17,6 +19,7 @@ public class AddTableController {
     @FXML private ComboBox<String> trangThaiBox;
 
     private Runnable onTableAdded; // callback sau khi thêm xong
+    private static final Pattern DIGIT_PATTERN = Pattern.compile("^\\d+$");
 
     public void setOnTableAdded(Runnable callback) {
         this.onTableAdded = callback;
@@ -25,13 +28,25 @@ public class AddTableController {
     @FXML
     private void handleSave() {
         // Validation
-        if (soBanField.getText().trim().isEmpty()) {
+        String soBanText = soBanField.getText().trim();
+        if (soBanText.isEmpty()) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng nhập số bàn").showAndWait();
             return;
         }
         
-        if (sucChuaField.getText().trim().isEmpty()) {
+        String sucChuaText = sucChuaField.getText().trim();
+        if (sucChuaText.isEmpty()) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng nhập sức chứa").showAndWait();
+            return;
+        }
+
+        if (!DIGIT_PATTERN.matcher(soBanText).matches()) {
+            new Alert(Alert.AlertType.WARNING, "Số bàn chỉ được chứa chữ số").showAndWait();
+            return;
+        }
+
+        if (!DIGIT_PATTERN.matcher(sucChuaText).matches()) {
+            new Alert(Alert.AlertType.WARNING, "Sức chứa chỉ được chứa chữ số").showAndWait();
             return;
         }
         
@@ -41,8 +56,8 @@ public class AddTableController {
         }
 
         try {
-            int soBan = Integer.parseInt(soBanField.getText().trim());
-            int sucChua = Integer.parseInt(sucChuaField.getText().trim());
+            int soBan = Integer.parseInt(soBanText);
+            int sucChua = Integer.parseInt(sucChuaText);
             String trangThai = trangThaiBox.getValue();
 
             if (soBan <= 0) {
