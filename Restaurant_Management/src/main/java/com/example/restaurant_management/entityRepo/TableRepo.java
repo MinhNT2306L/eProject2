@@ -21,11 +21,21 @@ public class TableRepo extends EntityRepo<Table> {
     public List<Table> getAll() {
         // Auto-correct status: Set 'PHUC_VU' tables to 'TRONG' if no active order
         // exists
-        String autoCorrectSql = "UPDATE ban b SET b.trang_thai = 'TRONG' " +
+        // Auto-correct status: Set 'PHUC_VU' tables to 'TRONG' if no active order
+        // exists
+        String autoCorrectSql1 = "UPDATE ban b SET b.trang_thai = 'TRONG' " +
                 "WHERE b.trang_thai = 'PHUC_VU' " +
                 "AND NOT EXISTS (SELECT 1 FROM orders o WHERE o.ban_id = b.ban_id AND o.trang_thai IN ('MOI', 'DANG_PHUC_VU'))";
-        try (PreparedStatement ps = this.getConn().prepareStatement(autoCorrectSql)) {
-            ps.executeUpdate();
+
+        // Auto-correct status: Set 'TRONG' tables to 'PHUC_VU' if active order EXISTS
+        String autoCorrectSql2 = "UPDATE ban b SET b.trang_thai = 'PHUC_VU' " +
+                "WHERE b.trang_thai = 'TRONG' " +
+                "AND EXISTS (SELECT 1 FROM orders o WHERE o.ban_id = b.ban_id AND o.trang_thai IN ('MOI', 'DANG_PHUC_VU'))";
+
+        try (java.sql.Statement stmt = this.getConn().createStatement()) {
+            stmt.addBatch(autoCorrectSql1);
+            stmt.addBatch(autoCorrectSql2);
+            stmt.executeBatch();
         } catch (SQLException e) {
             e.printStackTrace();
         }

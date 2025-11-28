@@ -179,17 +179,9 @@ public class OrderSummaryController {
 
     private void handleSendToKitchen() {
         // Submission Guard: Check if parent window is still active
+        // Submission Guard removed to allow operation even if owner stage detection
+        // fails
         Stage currentStage = (Stage) btnPay.getScene().getWindow();
-        if (currentStage.getOwner() == null || !currentStage.getOwner().isShowing()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText(null);
-            alert.setContentText("Cửa sổ chính đã đóng. Không thể gửi đơn hàng!");
-            alert.showAndWait();
-            // Close this orphaned window
-            currentStage.close();
-            return;
-        }
 
         if (orderedItems.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -312,6 +304,39 @@ public class OrderSummaryController {
                 }
 
                 conn.commit(); // Commit transaction
+
+                // Broadcast updates to Web Client and Kitchen
+                try {
+                    // 1. Broadcast Table Update (refreshes Web Client Order List & Table Map)
+                    com.example.restaurant_management.websocket.WebSocketService.getInstance().broadcastTableUpdate();
+
+                    // 2. Broadcast New Batch Order (notifies Kitchen)
+                    // Construct JSON payload for items
+                    com.google.gson.JsonArray broadcastItems = new com.google.gson.JsonArray();
+                    for (Map.Entry<Food, Integer> entry : orderedItems.entrySet()) {
+                        Food food = entry.getKey();
+                        Integer quantity = entry.getValue();
+
+                        com.google.gson.JsonObject item = new com.google.gson.JsonObject();
+                        item.addProperty("name", food.getFoodName());
+                        item.addProperty("quantity", quantity);
+                        broadcastItems.add(item);
+                    }
+
+                    // Use a default batchId of 1 since OrderDetailRepo doesn't support batch_id yet
+                    // This is sufficient to trigger the kitchen notification
+                    int batchId = 1;
+                    int tableId = currentTable.getTableId();
+                    String tableName = "Bàn " + currentTable.getTableNumber();
+
+                    com.example.restaurant_management.websocket.WebSocketService.getInstance()
+                            .broadcastNewBatchOrder(tableId, tableName, batchId, broadcastItems.toString());
+
+                } catch (Exception e) {
+                    System.err.println("Failed to broadcast WebSocket update: " + e.getMessage());
+                    e.printStackTrace();
+                    // Don't fail the transaction just because broadcast failed
+                }
 
                 // Clear ordered items and close window
                 orderedItems.clear();

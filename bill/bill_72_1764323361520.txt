@@ -1,0 +1,11 @@
+        RESTAURANT NAME
+   Date: 27/11/2025 00:43:16
+         Invoice ID: 72
+--------------------------------
+Item Name            Qty      Price
+--------------------------------
+--------------------------------
+Total Amount:                     0
+
+           Thank You!
+         See you again

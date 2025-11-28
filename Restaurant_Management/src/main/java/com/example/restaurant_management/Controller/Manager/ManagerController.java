@@ -357,8 +357,15 @@ public class ManagerController {
 
         // Action buttons
         HBox actionBox = new HBox(5);
-        actionBox.setPrefWidth(120);
-        actionBox.setAlignment(Pos.CENTER);
+        actionBox.setPrefWidth(180); // Increased width
+        actionBox.setAlignment(Pos.CENTER_LEFT); // Changed alignment
+
+        // Detail Button
+        Button detailBtn = new Button("Chi tiết");
+        detailBtn.setStyle(
+                "-fx-background-color: #9B59B6; -fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 3;");
+        detailBtn.setOnAction(e -> showBillPreview(order));
+        actionBox.getChildren().add(detailBtn);
 
         // Update status button (only for non-paid orders)
         if (!"DA_THANH_TOAN".equals(order.getTrangThai()) && !"DA_HUY".equals(order.getTrangThai())) {
@@ -680,8 +687,8 @@ public class ManagerController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            String errorMsg = "Không thể tải giao diện báo cáo!\n" + 
-                            "Chi tiết: " + e.getMessage();
+            String errorMsg = "Không thể tải giao diện báo cáo!\n" +
+                    "Chi tiết: " + e.getMessage();
             if (e.getCause() != null) {
                 errorMsg += "\nNguyên nhân: " + e.getCause().getMessage();
             }
@@ -694,6 +701,28 @@ public class ManagerController {
         if (pane != null) {
             pane.setVisible(visible);
             pane.setManaged(visible);
+        }
+    }
+
+    // === HIỂN THỊ CHI TIẾT ĐƠN HÀNG ===
+    private void showBillPreview(Order order) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/example/restaurant_management/View/bill-preview.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            com.example.restaurant_management.Controller.BillPreviewController controller = loader.getController();
+            controller.initData(order);
+
+            Stage stage = new Stage();
+            stage.setTitle("Chi tiết đơn hàng #" + order.getOrderId());
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Không thể mở chi tiết đơn hàng: " + e.getMessage());
         }
     }
 

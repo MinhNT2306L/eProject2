@@ -110,26 +110,44 @@ function updateConnectionStatus(isConnected) {
 }
 
 function addTicket(data) {
-    // Check if ticket already exists (update scenarios)
-    const existingIndex = tickets.findIndex(t => t.tableId === data.tableId && t.batchId === data.batchId);
-
-    const ticket = {
-        id: data.tableId + '-' + data.batchId, // Unique ID based on table and batch
-        tableId: data.tableId,
-        batchId: data.batchId,
-        items: data.items, // Expecting array of { name, quantity, status }
-        timestamp: data.timestamp,
-        // Determine status based on items.
-        // If ANY item is PENDING, ticket is PENDING.
-        // If ALL items are READY or SERVED, ticket is READY.
-        // Note: The API returns 'status' for each item.
-        status: data.items.every(i => ['READY', 'SERVED'].includes(i.status)) ? 'READY' : 'PENDING'
-    };
+    // Group by tableId ONLY (ignore batchId for grouping)
+    const existingIndex = tickets.findIndex(t => t.tableId === data.tableId);
 
     if (existingIndex >= 0) {
-        tickets[existingIndex] = ticket;
+        // Merge items into existing ticket
+        const existingTicket = tickets[existingIndex];
+
+        // Add new items
+        data.items.forEach(newItem => {
+            // Optional: Check for duplicates if needed, but usually we just append
+            existingTicket.items.push({
+                ...newItem,
+                status: newItem.status || 'PENDING' // Ensure status exists
+            });
+        });
+
+        // Update timestamp to latest
+        existingTicket.timestamp = data.timestamp;
+
+        // Update status: if ANY item is PENDING, ticket is PENDING
+        existingTicket.status = existingTicket.items.every(i => ['READY', 'SERVED'].includes(i.status)) ? 'READY' : 'PENDING';
+
+        // Move to top
+        tickets.splice(existingIndex, 1);
+        tickets.unshift(existingTicket);
+
     } else {
-        tickets.unshift(ticket); // Add to top
+        // Create new ticket
+        const ticket = {
+            id: data.tableId.toString(), // ID is just tableId now
+            tableId: data.tableId,
+            tableName: data.tableName,
+            batchId: -1, // Represents "All Batches"
+            items: data.items.map(i => ({ ...i, status: i.status || 'PENDING' })),
+            timestamp: data.timestamp,
+            status: data.items.every(i => ['READY', 'SERVED'].includes(i.status)) ? 'READY' : 'PENDING'
+        };
+        tickets.unshift(ticket);
     }
     renderTickets();
 }
@@ -169,12 +187,12 @@ function createTicketHTML(ticket) {
                 <div>
                     <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Bàn</span>
                     <div class="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        ${ticket.tableId}
+                        ${ticket.tableName || 'Bàn ' + ticket.tableId}
                         ${isReady ? '<span class="text-green-500 text-lg">✓</span>' : ''}
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="text-xs font-medium text-gray-500">Batch #${ticket.batchId}</div>
+                    <!-- Removed Batch ID display as it's now merged -->
                     <div class="text-sm font-medium text-gray-900">${timeString}</div>
                 </div>
             </div>
@@ -182,7 +200,7 @@ function createTicketHTML(ticket) {
             <!-- Items -->
             <div class="p-4 space-y-3">
                 ${ticket.items.map(item => {
-        const itemReady = item.status === 'READY' || isReady; // Fallback if item status missing
+        const itemReady = item.status === 'READY' || isReady;
         return `
                     <div class="flex justify-between items-center ${itemReady ? 'opacity-50' : ''}">
                         <span class="text-gray-700 font-medium ${!itemReady ? 'text-lg' : ''}">${item.name}</span>
@@ -214,7 +232,7 @@ async function completeTicket(ticketId) {
             method: 'POST',
             body: JSON.stringify({
                 tableId: ticket.tableId,
-                batchId: ticket.batchId
+                batchId: -1 // Signal to complete ALL batches for this table
             })
         });
 

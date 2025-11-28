@@ -56,5 +56,31 @@ public class OrderDetailRepo {
             ps.executeUpdate();
         }
     }
-}
 
+    public List<OrderDetail> getDetailsByInvoiceId(int invoiceId) {
+        List<OrderDetail> details = new ArrayList<>();
+        // Note: This query assumes 'hoadon' table has 'order_id' column.
+        // If not, this will fail. Using user's requested logic.
+        String sql = "SELECT od.*, m.ten_mon " +
+                "FROM order_chitiet od " +
+                "JOIN monan m ON od.mon_id = m.mon_id " +
+                "WHERE od.order_id = (SELECT order_id FROM hoadon WHERE hoadon_id = ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, invoiceId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    OrderDetail detail = mapper.mapRow(rs);
+                    // Manually map ten_mon since mapper doesn't handle it
+                    detail.setTenMon(rs.getString("ten_mon"));
+                    details.add(detail);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching details for invoice " + invoiceId + ": " + e.getMessage());
+            // If column order_id not found, we might want to throw or return empty
+            throw new RuntimeException(e);
+        }
+        return details;
+    }
+}

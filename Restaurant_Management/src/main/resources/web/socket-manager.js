@@ -11,14 +11,14 @@ const SocketManager = (function () {
     let shouldReconnect = true;
 
     function createInstance() {
-        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const hostname = window.location.hostname;
-        const port = '8887';
-        const WS_URL = `${protocol}://${hostname}:${port}`;
-        console.log("Connecting to Socket at:", WS_URL);
+        let wsPort = '8887';
 
         function connect() {
-            console.log("Connecting to WebSocket...");
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const hostname = window.location.hostname;
+            const WS_URL = `${protocol}://${hostname}:${wsPort}`;
+            console.log("Connecting to Socket at:", WS_URL);
+
             socket = new WebSocket(WS_URL);
 
             socket.onopen = function () {
@@ -61,7 +61,20 @@ const SocketManager = (function () {
             };
         }
 
-        connect();
+        // Fetch config then connect
+        fetch('/api/config')
+            .then(response => response.json())
+            .then(config => {
+                if (config.wsPort) {
+                    wsPort = config.wsPort;
+                    console.log("Configured WebSocket port:", wsPort);
+                }
+                connect();
+            })
+            .catch(error => {
+                console.warn("Failed to fetch config, using default port:", wsPort, error);
+                connect();
+            });
 
         return {
             /**

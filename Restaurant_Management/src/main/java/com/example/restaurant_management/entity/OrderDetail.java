@@ -88,4 +88,14 @@ public class OrderDetail {
     public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
     }
+
+    private String tenMon;
+
+    public String getTenMon() {
+        return tenMon;
+    }
+
+    public void setTenMon(String tenMon) {
+        this.tenMon = tenMon;
+    }
 }

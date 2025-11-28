@@ -35,6 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentView === 'orders') {
             refreshOrders();
         }
+        // Refresh Order Detail Modal if open
+        if (currentOrderId) {
+            viewOrderDetail(currentOrderId);
+        }
     });
 
     socket.on('BATCH_COMPLETED', (data) => {
@@ -100,9 +104,10 @@ function setupEventListeners() {
     });
 
     // Cart interactions
-    const cartFab = document.getElementById('cartFab');
-    if (cartFab) {
-        cartFab.addEventListener('click', () => {
+    // Cart interactions
+    const mobileCartBtn = document.getElementById('mobile-cart-btn');
+    if (mobileCartBtn) {
+        mobileCartBtn.addEventListener('click', () => {
             if (cart.length === 0) return;
             openCart();
         });
@@ -433,18 +438,20 @@ function addToCart(foodId) {
         });
     }
 
-    updateCart();
+    updateCartUI();
     updateMenuItem(foodId);
 
     // Show toast instead of opening cart
     showToast(`Đã thêm ${item.name}`);
 
     // Animate FAB
-    const fab = document.getElementById('cartFab');
+    // Animate FAB
+    const fab = document.getElementById('mobile-cart-btn');
     if (fab) {
-        fab.classList.remove('bump');
+        fab.classList.remove('scale-95');
         void fab.offsetWidth; // Trigger reflow
-        fab.classList.add('bump');
+        fab.classList.add('scale-95');
+        setTimeout(() => fab.classList.remove('scale-95'), 100);
     }
 }
 
@@ -458,46 +465,50 @@ function updateQuantity(foodId, delta) {
         cart = cart.filter(c => c.foodId !== foodId);
     }
 
-    updateCart();
+    updateCartUI();
     updateMenuItem(foodId);
 }
 
-// Update cart display
-function updateCart() {
+// Update Cart UI
+function updateCartUI() {
     const container = document.getElementById('cartItems');
     const totalElement = document.getElementById('cartTotal');
     const submitBtn = document.getElementById('submitOrderBtn');
-    const cartPanel = document.getElementById('cartPanel');
-    const cartBackdrop = document.getElementById('cartBackdrop');
-    const cartFab = document.getElementById('cartFab');
-    const cartFabCount = document.getElementById('cartFabCount');
-    const cartFabTotal = document.getElementById('cartFabTotal');
     const cartSummaryLabel = document.getElementById('cartSummaryLabel');
+    const mobileCartBtn = document.getElementById('mobile-cart-btn');
+    const cartCountBadge = document.getElementById('cart-count-badge');
+    const cartContainer = document.getElementById('cartContainer');
 
     container.innerHTML = '';
 
     if (cart.length === 0) {
-        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">Giỏ hàng trống</div>';
+        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm"><p>Chưa có món nào</p></div>';
         totalElement.textContent = '0';
         submitBtn.disabled = true;
-        if (cartFab) {
-            cartFab.disabled = true;
-            cartFab.classList.add('is-empty');
+        if (cartSummaryLabel) cartSummaryLabel.textContent = 'Chưa có món nào';
+
+        if (mobileCartBtn) {
+            mobileCartBtn.disabled = true;
+            mobileCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
         }
-        if (cartFabCount) {
-            cartFabCount.textContent = '0 món';
+        if (cartCountBadge) {
+            cartCountBadge.textContent = '0';
+            cartCountBadge.classList.add('hidden');
         }
-        if (cartFabTotal) {
-            cartFabTotal.textContent = '0 đ';
-        }
-        cartSummaryLabel && (cartSummaryLabel.textContent = 'Chưa có món nào');
-        // Removed auto-open/close cart logic when cart is empty
+
+        closeCart(); // Auto close if empty
         return;
     }
 
-    if (cartFab) {
-        cartFab.disabled = false;
-        cartFab.classList.remove('is-empty');
+    if (mobileCartBtn) {
+        mobileCartBtn.disabled = false;
+        mobileCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+        // Bump animation
+        mobileCartBtn.classList.remove('scale-95');
+        void mobileCartBtn.offsetWidth; // Trigger reflow
+        mobileCartBtn.classList.add('scale-95');
+        setTimeout(() => mobileCartBtn.classList.remove('scale-95'), 100);
     }
 
     let total = 0;
@@ -528,58 +539,51 @@ function updateCart() {
     totalElement.textContent = formatPrice(total);
     submitBtn.disabled = false;
 
-    if (cartFabCount) {
-        cartFabCount.textContent = `${totalItems} món`;
+    if (cartCountBadge) {
+        cartCountBadge.textContent = totalItems;
+        cartCountBadge.classList.remove('hidden');
     }
-    if (cartFabTotal) {
-        cartFabTotal.textContent = `${formatPrice(total)} đ`;
-    }
+
     if (cartSummaryLabel) {
         cartSummaryLabel.textContent = `${totalItems} món • ${formatPrice(total)} đ`;
     }
 
+    // Sync open state logic
     if (isDesktopViewport()) {
-        cartPanel?.classList.add('open');
-        cartBackdrop?.classList.remove('visible');
+        // Desktop: Always visible (handled by CSS mostly, but ensure classes)
     } else if (isCartOpen) {
-        cartPanel?.classList.add('open');
-        cartBackdrop?.classList.add('visible');
+        cartContainer?.classList.add('cart-active');
         document.body.classList.add('prevent-scroll');
     } else {
-        cartPanel?.classList.remove('open');
-        cartBackdrop?.classList.remove('visible');
+        cartContainer?.classList.remove('cart-active');
         document.body.classList.remove('prevent-scroll');
     }
 }
 
 function isDesktopViewport() {
-    return window.innerWidth >= DESKTOP_BREAKPOINT;
+    return window.innerWidth >= 769; // Updated breakpoint
 }
 
 function openCart() {
     if (isDesktopViewport() || cart.length === 0) return;
     isCartOpen = true;
-    const cartPanel = document.getElementById('cartPanel');
-    const cartBackdrop = document.getElementById('cartBackdrop');
-    cartPanel?.classList.add('open');
-    cartBackdrop?.classList.add('visible');
+    const cartContainer = document.getElementById('cartContainer');
+    cartContainer?.classList.add('cart-active');
     document.body.classList.add('prevent-scroll');
 }
 
 function closeCart() {
     isCartOpen = false;
     if (isDesktopViewport()) return;
-    const cartPanel = document.getElementById('cartPanel');
-    const cartBackdrop = document.getElementById('cartBackdrop');
-    cartPanel?.classList.remove('open');
-    cartBackdrop?.classList.remove('visible');
+    const cartContainer = document.getElementById('cartContainer');
+    cartContainer?.classList.remove('cart-active');
     document.body.classList.remove('prevent-scroll');
 }
 
 function syncCartPanelState() {
+    const cartContainer = document.getElementById('cartContainer');
     if (isDesktopViewport()) {
-        document.getElementById('cartPanel')?.classList.add('open');
-        document.getElementById('cartBackdrop')?.classList.remove('visible');
+        cartContainer?.classList.remove('cart-active'); // Reset mobile state
         document.body.classList.remove('prevent-scroll');
         return;
     }
@@ -595,7 +599,7 @@ function syncCartPanelState() {
 function clearCart() {
     if (confirm('Bạn có chắc muốn xóa tất cả món trong giỏ hàng?')) {
         cart = [];
-        updateCart();
+        updateCartUI();
         renderMenuItems();
     }
 }
@@ -662,7 +666,7 @@ async function submitOrder() {
 
         // Clear cart and reset
         cart = [];
-        updateCart();
+        updateCartUI();
         renderMenuItems();
         tableSelect.value = '';
 
@@ -761,7 +765,7 @@ function renderOrdersList() {
             <div class="space-y-2 mb-5">
                 <div class="flex justify-between text-sm">
                     <span class="text-slate-500">Bàn</span>
-                    <span class="font-medium text-slate-900">${order.tableId > 0 ? `Bàn ${order.tableId}` : 'Không có'}</span>
+                    <span class="font-medium text-slate-900">${order.tableName || (order.tableId > 0 ? `Bàn ${order.tableId}` : 'Không có')}</span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-slate-500">Tổng tiền</span>
@@ -802,7 +806,7 @@ async function viewOrderDetail(orderId) {
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <span class="block text-xs text-slate-400 uppercase tracking-wider mb-1">Bàn</span>
-                    <span class="font-medium text-slate-900">${order.tableId > 0 ? `Bàn ${order.tableId}` : 'Không có'}</span>
+                    <span class="font-medium text-slate-900">${order.tableName || (order.tableId > 0 ? `Bàn ${order.tableId}` : 'Không có')}</span>
                 </div>
                 <div>
                     <span class="block text-xs text-slate-400 uppercase tracking-wider mb-1">Trạng thái</span>

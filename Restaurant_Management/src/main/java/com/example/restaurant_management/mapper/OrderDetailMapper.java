@@ -16,7 +16,12 @@ public class OrderDetailMapper implements RowMapper<OrderDetail> {
                 rs.getDouble("don_gia"),
                 rs.getDouble("thanh_tien"));
         // trang_thai column doesn't exist in order_chitiet table, set to null
-        detail.setTrangThai(null);
+        try {
+            detail.setTrangThai(rs.getString("trang_thai"));
+        } catch (SQLException e) {
+            // Column might not exist in some queries, ignore or set to null
+            detail.setTrangThai(null);
+        }
         return detail;
     }
 }

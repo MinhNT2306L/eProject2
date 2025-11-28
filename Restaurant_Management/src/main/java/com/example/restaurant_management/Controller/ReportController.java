@@ -69,7 +69,7 @@ public class ReportController {
             if (startDatePicker != null) {
                 startDatePicker.setValue(LocalDate.now().minusDays(30));
             }
-            
+
             // Setup button actions
             if (filterBtn != null) {
                 filterBtn.setOnAction(e -> loadReport());
@@ -86,7 +86,7 @@ public class ReportController {
             if (yearBtn != null) {
                 yearBtn.setOnAction(e -> setDateRangeYear());
             }
-            
+
             // Initialize service
             try {
                 reportService = new RevenueReportService();
@@ -94,7 +94,7 @@ public class ReportController {
                 e.printStackTrace();
                 System.err.println("Error creating RevenueReportService: " + e.getMessage());
             }
-            
+
             // Load initial report after a short delay to ensure all components are ready
             javafx.application.Platform.runLater(() -> {
                 try {
@@ -166,7 +166,7 @@ public class ReportController {
             if (startDatePicker == null || endDatePicker == null) {
                 return;
             }
-            
+
             LocalDate startDate = startDatePicker.getValue();
             LocalDate endDate = endDatePicker.getValue();
 
@@ -339,5 +339,5 @@ public class ReportController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-}
 
+}

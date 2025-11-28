@@ -5,10 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="da8ee44f-50d4-453e-9629-b6b7d47861df" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/ConnectDB/ConnectDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/ConnectDB/ConnectDB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/Manager/ManagerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/Manager/ManagerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/OrderSummaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/OrderSummaryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/PaymentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/ReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/Controller/ReportController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/api/RestApiServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/api/RestApiServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entity/OrderDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entity/OrderDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/OrderDetailRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/OrderDetailRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/TableRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/entityRepo/TableRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/OrderDetailMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/mapper/OrderDetailMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/service/BillGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/service/BillGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/service/RevenueReportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/service/RevenueReportService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/websocket/RestaurantWebSocketServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/websocket/RestaurantWebSocketServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/websocket/WebSocketService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/java/com/example/restaurant_management/websocket/WebSocketService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/kitchen.js" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/kitchen.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/socket-manager.js" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/socket-manager.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/Restaurant_Management/src/main/resources/web/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bill_0_1763749800879.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +45,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -36,35 +55,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "JavaScript Debug.login.html.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Remote JVM Debug.Maven Debug.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/nguyenthanhminh/Desktop/eProject2",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.JavaFX",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.login.html.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Restaurant_Management [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Restaurant_Management [package].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Remote JVM Debug.Maven Debug.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/nguyenthanhminh/Desktop/eProject2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.JavaFX&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="eProject2" />
@@ -120,7 +141,14 @@
       <workItem from="1763380466337" duration="1988000" />
       <workItem from="1763383992880" duration="12418000" />
       <workItem from="1763615825097" duration="1840000" />
-      <workItem from="1763620756951" duration="23686000" />
+      <workItem from="1763620756951" duration="36539000" />
+      <workItem from="1764170109252" duration="3000" />
+      <workItem from="1764170139121" duration="1807000" />
+      <workItem from="1764172174876" duration="6557000" />
+      <workItem from="1764231581283" duration="3642000" />
+      <workItem from="1764262056300" duration="2065000" />
+      <workItem from="1764264136998" duration="3863000" />
+      <workItem from="1764320770669" duration="7014000" />
     </task>
     <servers />
   </component>

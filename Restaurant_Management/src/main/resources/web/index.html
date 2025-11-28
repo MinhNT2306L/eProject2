@@ -291,14 +291,12 @@
         </div>
     </div>
 
-    <button id="cartFab"
-        class="cart-fab lg:hidden fixed bottom-5 right-4 px-5 py-3 rounded-2xl shadow-elevation flex flex-col gap-1 z-50"
-        type="button" aria-label="Mở giỏ hàng" disabled>
-        <span class="text-xs uppercase tracking-wider font-medium opacity-80">Giỏ hàng</span>
-        <div class="flex items-center justify-between gap-4">
-            <span id="cartFabCount" class="text-base font-semibold">0 món</span>
-            <span id="cartFabTotal" class="text-sm font-semibold">0 đ</span>
-        </div>
+    <button id="mobile-cart-btn"
+        class="cart-fab lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-elevation flex items-center justify-center z-50 bg-primary-600 text-white transition-transform active:scale-95"
+        type="button" aria-label="Mở giỏ hàng">
+        <span class="text-2xl">🛒</span>
+        <span id="cart-count-badge"
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">0</span>
     </button>
 
     <!-- Order Detail Modal -->

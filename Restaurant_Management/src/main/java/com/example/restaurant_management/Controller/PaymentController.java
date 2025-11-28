@@ -117,7 +117,7 @@ public class PaymentController implements Initializable {
         List<javafx.scene.Node> toRemove = new java.util.ArrayList<>();
         boolean foundHeader = false;
         boolean foundFirstSeparator = false;
-        
+
         for (javafx.scene.Node node : invoiceDetailsContainer.getChildren()) {
             if (node instanceof HBox) {
                 HBox hbox = (HBox) node;
@@ -134,7 +134,7 @@ public class PaymentController implements Initializable {
             }
             toRemove.add(node);
         }
-        
+
         invoiceDetailsContainer.getChildren().removeAll(toRemove);
 
         totalAmount = 0.0;
@@ -224,9 +224,10 @@ public class PaymentController implements Initializable {
                 // Try file system paths as fallback
                 File qrFile = new File("src/main/resources/com/example/restaurant_management/image/qr-code.png");
                 if (!qrFile.exists()) {
-                    qrFile = new File("Restaurant_Management/src/main/resources/com/example/restaurant_management/image/qr-code.png");
+                    qrFile = new File(
+                            "Restaurant_Management/src/main/resources/com/example/restaurant_management/image/qr-code.png");
                 }
-                
+
                 if (qrFile.exists()) {
                     Image qrImage = new Image(qrFile.toURI().toString());
                     qrCodeImage.setImage(qrImage);
@@ -330,8 +331,7 @@ public class PaymentController implements Initializable {
         try {
             // Open OrderSummaryView for adding more items to existing order
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/example/restaurant_management/View/OrderSummaryView.fxml")
-            );
+                    getClass().getResource("/com/example/restaurant_management/View/OrderSummaryView.fxml"));
             Parent root = loader.load();
 
             OrderSummaryController controller = loader.getController();
@@ -342,12 +342,12 @@ public class PaymentController implements Initializable {
             Stage orderStage = new Stage();
             orderStage.setTitle("Thêm món - Bàn " + currentTable.getTableNumber());
             orderStage.setScene(new Scene(root));
-            
+
             // When order window closes, refresh payment screen
             orderStage.setOnCloseRequest(e -> refreshOrderDetails());
-            
+
             orderStage.showAndWait();
-            
+
             // Refresh after window closes
             refreshOrderDetails();
 
@@ -378,4 +378,3 @@ public class PaymentController implements Initializable {
         stage.close();
     }
 }
-

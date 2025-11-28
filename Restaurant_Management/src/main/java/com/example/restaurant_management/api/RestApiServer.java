@@ -121,6 +121,9 @@ public class RestApiServer {
         // POST /api/orders/{id}/pay
         server.createContext("/api/orders/", this::handleOrderRoutes);
 
+        // GET /api/config - Get server configuration (public)
+        server.createContext("/api/config", this::handleGetConfig);
+
         // Serve static web files
         server.createContext("/", this::handleStaticFiles);
 
@@ -454,6 +457,30 @@ public class RestApiServer {
         }
     }
 
+    private void handleGetConfig(HttpExchange exchange) throws IOException {
+        if ("OPTIONS".equals(exchange.getRequestMethod())) {
+            handleOptions(exchange);
+            return;
+        }
+
+        if (!"GET".equals(exchange.getRequestMethod())) {
+            sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+            return;
+        }
+
+        try {
+            int wsPort = com.example.restaurant_management.websocket.WebSocketService.getInstance().getPort();
+            JsonObject config = new JsonObject();
+            config.addProperty("wsPort", wsPort);
+            sendJsonResponse(exchange, 200, gson.toJson(config));
+        } catch (Exception e) {
+            e.printStackTrace();
+            JsonObject error = new JsonObject();
+            error.addProperty("error", e.getMessage());
+            sendJsonResponse(exchange, 500, gson.toJson(error));
+        }
+    }
+
     private Integer validateToken(HttpExchange exchange) {
         String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -505,7 +532,19 @@ public class RestApiServer {
             for (Order order : activeOrders) {
                 JsonObject orderJson = new JsonObject();
                 orderJson.addProperty("id", order.getOrderId());
-                orderJson.addProperty("tableId", order.getBanId() != null ? order.getBanId() : 0);
+                int tableId = order.getBanId() != null ? order.getBanId() : 0;
+                orderJson.addProperty("tableId", tableId);
+
+                // Add tableName
+                String tableName = "Bàn " + tableId;
+                if (order.getBanId() != null) {
+                    Table table = tableRepo.findById(order.getBanId());
+                    if (table != null) {
+                        tableName = "Bàn " + table.getTableNumber();
+                    }
+                }
+                orderJson.addProperty("tableName", tableName);
+
                 orderJson.addProperty("total", order.getTongTien());
                 orderJson.addProperty("status", order.getTrangThai());
                 orderJson.addProperty("time", order.getThoiGian() != null ? order.getThoiGian().toString() : "");
@@ -882,8 +921,20 @@ public class RestApiServer {
                     broadcastItems.add(broadcastItem);
                 }
 
+                // Get Table Name
+                String tableName = "Bàn " + tableId;
+                String tableNameSql = "SELECT so_ban FROM ban WHERE ban_id = ?";
+                try (java.sql.PreparedStatement psTable = conn.prepareStatement(tableNameSql)) {
+                    psTable.setInt(1, tableId);
+                    try (java.sql.ResultSet rsTable = psTable.executeQuery()) {
+                        if (rsTable.next()) {
+                            tableName = "Bàn " + rsTable.getInt("so_ban");
+                        }
+                    }
+                }
+
                 com.example.restaurant_management.websocket.WebSocketService.getInstance()
-                        .broadcastNewBatchOrder(tableId, batchId, broadcastItems.toString());
+                        .broadcastNewBatchOrder(tableId, tableName, batchId, broadcastItems.toString());
 
                 JsonObject response = new JsonObject();
                 response.addProperty("message", "Items added successfully");
@@ -1109,10 +1160,12 @@ public class RestApiServer {
 
         try (java.sql.Connection conn = com.example.restaurant_management.ConnectDB.ConnectDB.getConnection()) {
             // Query to get items grouped by table and batch, only for active orders
-            String sql = "SELECT o.ban_id, od.batch_id, m.ten_mon, od.so_luong, o.thoi_gian, od.trang_thai " +
+            // Query to get items grouped by table and batch, only for active orders
+            String sql = "SELECT o.ban_id, b.so_ban, od.batch_id, m.ten_mon, od.so_luong, o.thoi_gian, od.trang_thai " +
                     "FROM order_chitiet od " +
                     "JOIN orders o ON od.order_id = o.order_id " +
                     "JOIN monan m ON od.mon_id = m.mon_id " +
+                    "LEFT JOIN ban b ON o.ban_id = b.ban_id " +
                     "WHERE o.trang_thai IN ('MOI', 'DANG_PHUC_VU') " +
                     "ORDER BY o.thoi_gian DESC, od.batch_id DESC";
 
@@ -1125,6 +1178,7 @@ public class RestApiServer {
 
                 while (rs.next()) {
                     int tableId = rs.getInt("ban_id");
+                    int tableNumber = rs.getInt("so_ban"); // Get table number
                     int batchId = rs.getInt("batch_id");
                     String foodName = rs.getString("ten_mon");
                     int quantity = rs.getInt("so_luong");
@@ -1136,6 +1190,10 @@ public class RestApiServer {
                     if (!batchMap.containsKey(key)) {
                         com.google.gson.JsonObject batch = new com.google.gson.JsonObject();
                         batch.addProperty("tableId", tableId);
+                        // Add tableName
+                        String tableName = (tableNumber > 0) ? "Bàn " + tableNumber : "Bàn " + tableId;
+                        batch.addProperty("tableName", tableName);
+
                         batch.addProperty("batchId", batchId);
                         batch.addProperty("timestamp", timestamp.getTime());
                         // We can infer batch status from items, or just use the first item's status if
@@ -1200,13 +1258,24 @@ public class RestApiServer {
             boolean shouldUpdate = false;
             try (java.sql.Connection conn = com.example.restaurant_management.ConnectDB.ConnectDB.getConnection()) {
                 // Check if there are any items that are NOT READY/SERVED (i.e. PENDING or NULL)
-                String checkSql = "SELECT COUNT(*) FROM order_chitiet od " +
-                        "JOIN orders o ON od.order_id = o.order_id " +
-                        "WHERE o.ban_id = ? AND od.batch_id = ? AND (od.trang_thai IS NULL OR od.trang_thai = 'PENDING')";
+                String checkSql;
+                if (batchId == -1) {
+                    // Check ALL batches for the table
+                    checkSql = "SELECT COUNT(*) FROM order_chitiet od " +
+                            "JOIN orders o ON od.order_id = o.order_id " +
+                            "WHERE o.ban_id = ? AND (od.trang_thai IS NULL OR od.trang_thai = 'PENDING')";
+                } else {
+                    // Check specific batch
+                    checkSql = "SELECT COUNT(*) FROM order_chitiet od " +
+                            "JOIN orders o ON od.order_id = o.order_id " +
+                            "WHERE o.ban_id = ? AND od.batch_id = ? AND (od.trang_thai IS NULL OR od.trang_thai = 'PENDING')";
+                }
 
                 try (java.sql.PreparedStatement psCheck = conn.prepareStatement(checkSql)) {
                     psCheck.setInt(1, tableId);
-                    psCheck.setInt(2, batchId);
+                    if (batchId != -1) {
+                        psCheck.setInt(2, batchId);
+                    }
                     try (java.sql.ResultSet rsCheck = psCheck.executeQuery()) {
                         if (rsCheck.next() && rsCheck.getInt(1) > 0) {
                             shouldUpdate = true;
@@ -1215,26 +1284,42 @@ public class RestApiServer {
                 }
 
                 if (shouldUpdate) {
-                    String updateSql = "UPDATE order_chitiet od " +
-                            "JOIN orders o ON od.order_id = o.order_id " +
-                            "SET od.trang_thai = 'READY' " +
-                            "WHERE o.ban_id = ? AND od.batch_id = ? AND (od.trang_thai IS NULL OR od.trang_thai = 'PENDING')";
+                    String updateSql;
+                    if (batchId == -1) {
+                        // Update ALL batches for the table
+                        updateSql = "UPDATE order_chitiet od " +
+                                "JOIN orders o ON od.order_id = o.order_id " +
+                                "SET od.trang_thai = 'READY' " +
+                                "WHERE o.ban_id = ? AND (od.trang_thai IS NULL OR od.trang_thai = 'PENDING')";
+                    } else {
+                        // Update specific batch
+                        updateSql = "UPDATE order_chitiet od " +
+                                "JOIN orders o ON od.order_id = o.order_id " +
+                                "SET od.trang_thai = 'READY' " +
+                                "WHERE o.ban_id = ? AND od.batch_id = ? AND (od.trang_thai IS NULL OR od.trang_thai = 'PENDING')";
+                    }
+
                     try (java.sql.PreparedStatement ps = conn.prepareStatement(updateSql)) {
                         ps.setInt(1, tableId);
-                        ps.setInt(2, batchId);
+                        if (batchId != -1) {
+                            ps.setInt(2, batchId);
+                        }
                         int rowsUpdated = ps.executeUpdate();
                         System.out.println(
-                                "Updated " + rowsUpdated + " items to READY for table " + tableId + " batch "
-                                        + batchId);
+                                "Updated " + rowsUpdated + " items to READY for table " + tableId +
+                                        (batchId == -1 ? " (ALL BATCHES)" : " batch " + batchId));
                     }
 
                     // Broadcast completion event ONLY if update happened
+                    // If batchId is -1, we broadcast with -1 so frontend knows to update the whole
+                    // table card
                     com.example.restaurant_management.websocket.WebSocketService.getInstance().broadcastBatchCompleted(
                             tableId,
                             batchId);
                 } else {
-                    System.out.println("Batch " + batchId + " for table " + tableId
-                            + " already processed. Skipping update and broadcast.");
+                    System.out.println("Orders for table " + tableId +
+                            (batchId == -1 ? " (ALL BATCHES)" : " batch " + batchId) +
+                            " already processed. Skipping update and broadcast.");
                 }
             }
 

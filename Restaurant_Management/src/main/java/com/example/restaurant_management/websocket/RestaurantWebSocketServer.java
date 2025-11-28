@@ -11,56 +11,64 @@ import java.util.Set;
 
 public class RestaurantWebSocketServer extends WebSocketServer {
 
-    private static final int PORT = 8887;
+    private int port;
     private final Set<WebSocket> conns = Collections.synchronizedSet(new HashSet<>());
 
-    public RestaurantWebSocketServer() {
-        super(new InetSocketAddress(PORT));
+    public RestaurantWebSocketServer(int port) {
+        super(new InetSocketAddress(port));
+        this.port = port;
         setReuseAddr(true);
     }
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         conns.add(conn);
-        System.out.println("New WebSocket connection: " + conn.getRemoteSocketAddress());
+        System.out.println("🟢 [CONNECT] Client mới: " + conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         conns.remove(conn);
-        System.out.println("Closed connection: " + conn.getRemoteSocketAddress());
+        System.out.println("🔴 [CLOSE] Client ngắt kết nối: " + conn.getRemoteSocketAddress());
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("Received message from " + conn.getRemoteSocketAddress() + ": " + message);
-        // Handle incoming messages if needed (e.g., join room)
+        // --- CLEAN LOGGING ---
+        System.out.println("\n=================== 📨 TIN NHẮN MỚI ===================");
+        System.out.println("👤 Từ: " + conn.getRemoteSocketAddress());
+        System.out.println("📦 Nội dung JSON: " + message);
+
+        if (message.contains("ORDER")) {
+            System.out.println("👉 Hành động: GỌI MÓN / ORDER MỚI");
+        } else if (message.contains("PAYMENT")) {
+            System.out.println("👉 Hành động: THANH TOÁN");
+        } else if (message.contains("TABLE_UPDATE")) {
+            System.out.println("👉 Hành động: CẬP NHẬT TRẠNG THÁI BÀN");
+        }
+        System.out.println("========================================================\n");
+
+        broadcastMessage(message);
     }
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        ex.printStackTrace();
-        if (conn != null) {
-            conns.remove(conn);
-        }
+        System.err.println("⚠️ [ERROR] Lỗi WebSocket: " + ex.getMessage());
     }
 
     @Override
     public void onStart() {
-        System.out.println("WebSocket Server started on port: " + PORT);
+        System.out.println("🚀 Server WebSocket đã khởi động tại cổng: " + port);
     }
 
-    /**
-     * Broadcasts a message to all connected clients.
-     * 
-     * @param message The message to broadcast
-     */
     public void broadcastMessage(String message) {
-        System.out.println("Broadcasting: " + message);
-        synchronized (conns) {
-            for (WebSocket conn : conns) {
-                conn.send(message);
+        // Log ONCE outside the loop
+        System.out.println("📡 [BROADCAST] Đang đồng bộ tới " + conns.size() + " clients...");
+        for (WebSocket sock : conns) {
+            if (sock.isOpen()) {
+                sock.send(message);
             }
         }
+        System.out.println("✅ [DONE] Đã gửi xong!\n");
     }
 }

@@ -23,8 +23,8 @@ public class RevenueReportService {
     // Tổng doanh thu theo khoảng thời gian
     public double getTotalRevenue(LocalDate startDate, LocalDate endDate) {
         String sql = "SELECT COALESCE(SUM(tong_tien), 0) as total " +
-                     "FROM hoadon " +
-                     "WHERE DATE(thoi_gian) BETWEEN ? AND ?";
+                "FROM hoadon " +
+                "WHERE DATE(thoi_gian) BETWEEN ? AND ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, java.sql.Date.valueOf(startDate));
             ps.setDate(2, java.sql.Date.valueOf(endDate));
@@ -43,10 +43,10 @@ public class RevenueReportService {
     public List<Map<String, Object>> getDailyRevenue(LocalDate startDate, LocalDate endDate) {
         List<Map<String, Object>> result = new ArrayList<>();
         String sql = "SELECT DATE(thoi_gian) as date, COALESCE(SUM(tong_tien), 0) as revenue, COUNT(*) as count " +
-                     "FROM hoadon " +
-                     "WHERE DATE(thoi_gian) BETWEEN ? AND ? " +
-                     "GROUP BY DATE(thoi_gian) " +
-                     "ORDER BY date ASC";
+                "FROM hoadon " +
+                "WHERE DATE(thoi_gian) BETWEEN ? AND ? " +
+                "GROUP BY DATE(thoi_gian) " +
+                "ORDER BY date ASC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, java.sql.Date.valueOf(startDate));
             ps.setDate(2, java.sql.Date.valueOf(endDate));
@@ -69,10 +69,10 @@ public class RevenueReportService {
     public List<Map<String, Object>> getMonthlyRevenue(int year) {
         List<Map<String, Object>> result = new ArrayList<>();
         String sql = "SELECT MONTH(thoi_gian) as month, COALESCE(SUM(tong_tien), 0) as revenue, COUNT(*) as count " +
-                     "FROM hoadon " +
-                     "WHERE YEAR(thoi_gian) = ? " +
-                     "GROUP BY MONTH(thoi_gian) " +
-                     "ORDER BY month ASC";
+                "FROM hoadon " +
+                "WHERE YEAR(thoi_gian) = ? " +
+                "GROUP BY MONTH(thoi_gian) " +
+                "ORDER BY month ASC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, year);
             try (ResultSet rs = ps.executeQuery()) {
@@ -94,9 +94,9 @@ public class RevenueReportService {
     public List<Map<String, Object>> getRevenueByPaymentMethod(LocalDate startDate, LocalDate endDate) {
         List<Map<String, Object>> result = new ArrayList<>();
         String sql = "SELECT phuong_thuc, COALESCE(SUM(tong_tien), 0) as revenue, COUNT(*) as count " +
-                     "FROM hoadon " +
-                     "WHERE DATE(thoi_gian) BETWEEN ? AND ? " +
-                     "GROUP BY phuong_thuc";
+                "FROM hoadon " +
+                "WHERE DATE(thoi_gian) BETWEEN ? AND ? " +
+                "GROUP BY phuong_thuc";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, java.sql.Date.valueOf(startDate));
             ps.setDate(2, java.sql.Date.valueOf(endDate));
@@ -119,15 +119,15 @@ public class RevenueReportService {
     public List<Map<String, Object>> getTopSellingFoods(LocalDate startDate, LocalDate endDate, int limit) {
         List<Map<String, Object>> result = new ArrayList<>();
         String sql = "SELECT m.ten_mon, m.loai_mon, SUM(od.so_luong) as total_quantity, " +
-                     "SUM(od.thanh_tien) as total_revenue " +
-                     "FROM order_chitiet od " +
-                     "JOIN orders o ON od.order_id = o.order_id " +
-                     "JOIN monan m ON od.mon_id = m.mon_id " +
-                     "WHERE DATE(o.thoi_gian) BETWEEN ? AND ? " +
-                     "AND o.trang_thai = 'DA_THANH_TOAN' " +
-                     "GROUP BY m.mon_id, m.ten_mon, m.loai_mon " +
-                     "ORDER BY total_quantity DESC " +
-                     "LIMIT ?";
+                "SUM(od.thanh_tien) as total_revenue " +
+                "FROM order_chitiet od " +
+                "JOIN orders o ON od.order_id = o.order_id " +
+                "JOIN monan m ON od.mon_id = m.mon_id " +
+                "WHERE DATE(o.thoi_gian) BETWEEN ? AND ? " +
+                "AND o.trang_thai = 'DA_THANH_TOAN' " +
+                "GROUP BY m.mon_id, m.ten_mon, m.loai_mon " +
+                "ORDER BY total_quantity DESC " +
+                "LIMIT ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, java.sql.Date.valueOf(startDate));
             ps.setDate(2, java.sql.Date.valueOf(endDate));
@@ -152,9 +152,9 @@ public class RevenueReportService {
     public Map<String, Integer> getOrderCountByStatus(LocalDate startDate, LocalDate endDate) {
         Map<String, Integer> result = new HashMap<>();
         String sql = "SELECT trang_thai, COUNT(*) as count " +
-                     "FROM orders " +
-                     "WHERE DATE(thoi_gian) BETWEEN ? AND ? " +
-                     "GROUP BY trang_thai";
+                "FROM orders " +
+                "WHERE DATE(thoi_gian) BETWEEN ? AND ? " +
+                "GROUP BY trang_thai";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, java.sql.Date.valueOf(startDate));
             ps.setDate(2, java.sql.Date.valueOf(endDate));
@@ -172,8 +172,8 @@ public class RevenueReportService {
     // Doanh thu trung bình mỗi đơn hàng
     public double getAverageOrderValue(LocalDate startDate, LocalDate endDate) {
         String sql = "SELECT COALESCE(AVG(tong_tien), 0) as avg_value " +
-                     "FROM hoadon " +
-                     "WHERE DATE(thoi_gian) BETWEEN ? AND ?";
+                "FROM hoadon " +
+                "WHERE DATE(thoi_gian) BETWEEN ? AND ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, java.sql.Date.valueOf(startDate));
             ps.setDate(2, java.sql.Date.valueOf(endDate));
@@ -191,8 +191,8 @@ public class RevenueReportService {
     // Tổng số hóa đơn
     public int getTotalInvoices(LocalDate startDate, LocalDate endDate) {
         String sql = "SELECT COUNT(*) as count " +
-                     "FROM hoadon " +
-                     "WHERE DATE(thoi_gian) BETWEEN ? AND ?";
+                "FROM hoadon " +
+                "WHERE DATE(thoi_gian) BETWEEN ? AND ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, java.sql.Date.valueOf(startDate));
             ps.setDate(2, java.sql.Date.valueOf(endDate));
@@ -207,4 +207,3 @@ public class RevenueReportService {
         return 0;
     }
 }
-
