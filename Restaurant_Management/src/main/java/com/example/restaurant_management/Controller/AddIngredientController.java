@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
+import java.util.regex.Pattern;
 
 public class AddIngredientController {
 
@@ -42,6 +43,7 @@ public class AddIngredientController {
     private Runnable onIngredientAdded; // callback sau khi thêm/sửa xong
     private Ingredient currentIngredient; // null nếu là thêm mới, có giá trị nếu là sửa
     private IngredientRepo ingredientRepo;
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L} ]+$");
 
     @FXML
     public void initialize() {
@@ -98,8 +100,13 @@ public class AddIngredientController {
     @FXML
     private void handleSave() {
         // Validation
-        if (ingredientNameField.getText().trim().isEmpty()) {
+        String ingredientName = ingredientNameField.getText().trim();
+        if (ingredientName.isEmpty()) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng nhập tên nguyên liệu").showAndWait();
+            return;
+        }
+        if (!NAME_PATTERN.matcher(ingredientName).matches()) {
+            new Alert(Alert.AlertType.WARNING, "Tên nguyên liệu chỉ chứa chữ và khoảng trắng").showAndWait();
             return;
         }
 
@@ -111,6 +118,12 @@ public class AddIngredientController {
             }
         } catch (NumberFormatException e) {
             new Alert(Alert.AlertType.WARNING, "Số lượng không hợp lệ").showAndWait();
+            return;
+        }
+
+        String supplier = supplierField.getText().trim();
+        if (!supplier.isEmpty() && !NAME_PATTERN.matcher(supplier).matches()) {
+            new Alert(Alert.AlertType.WARNING, "Tên nhà cung cấp chỉ chứa chữ và khoảng trắng").showAndWait();
             return;
         }
 
@@ -129,11 +142,10 @@ public class AddIngredientController {
             if (currentIngredient == null) {
                 // Thêm mới
                 ingredient = new Ingredient();
-                ingredient.setIngredientName(ingredientNameField.getText().trim());
+                ingredient.setIngredientName(ingredientName);
                 ingredient.setQuantity(Double.parseDouble(quantityField.getText().trim()));
                 ingredient.setUnit(unitComboBox.getValue());
-                ingredient
-                        .setSupplier(supplierField.getText().trim().isEmpty() ? null : supplierField.getText().trim());
+                ingredient.setSupplier(supplier.isEmpty() ? null : supplier);
                 ingredient.setImportDate(
                         importDatePicker.getValue() != null ? importDatePicker.getValue() : LocalDate.now());
                 ingredient.setExpiryDate(expiryDatePicker.getValue());
@@ -152,11 +164,10 @@ public class AddIngredientController {
                 }
             } else {
                 // Sửa
-                currentIngredient.setIngredientName(ingredientNameField.getText().trim());
+                currentIngredient.setIngredientName(ingredientName);
                 currentIngredient.setQuantity(Double.parseDouble(quantityField.getText().trim()));
                 currentIngredient.setUnit(unitComboBox.getValue());
-                currentIngredient
-                        .setSupplier(supplierField.getText().trim().isEmpty() ? null : supplierField.getText().trim());
+                currentIngredient.setSupplier(supplier.isEmpty() ? null : supplier);
                 currentIngredient.setImportDate(
                         importDatePicker.getValue() != null ? importDatePicker.getValue() : LocalDate.now());
                 currentIngredient.setExpiryDate(expiryDatePicker.getValue());

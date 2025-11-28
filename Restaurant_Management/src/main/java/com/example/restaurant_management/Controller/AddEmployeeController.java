@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class AddEmployeeController {
 
@@ -41,6 +42,10 @@ public class AddEmployeeController {
     private Employee currentEmployee; // null nếu là thêm mới, có giá trị nếu là sửa
     private EmployeeRepo employeeRepo;
     private List<Map<String, Object>> roles;
+    private static final Pattern FULL_NAME_PATTERN = Pattern.compile("^[\\p{L} ]+$");
+    private static final Pattern PHONE_PATTERN_11_DIGITS = Pattern.compile("^\\d{11}$");
+    private static final Pattern PHONE_PATTERN_PLUS84 = Pattern.compile("^\\+84\\d+$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@gmail\\.com$");
 
     @FXML
     public void initialize() {
@@ -112,8 +117,27 @@ public class AddEmployeeController {
             return;
         }
 
-        if (fullNameField.getText().trim().isEmpty()) {
+        String fullName = fullNameField.getText().trim();
+        if (fullName.isEmpty()) {
             new Alert(Alert.AlertType.WARNING, "Vui lòng nhập họ tên").showAndWait();
+            return;
+        }
+        if (!FULL_NAME_PATTERN.matcher(fullName).matches()) {
+            new Alert(Alert.AlertType.WARNING, "Họ tên chỉ được chứa chữ cái và khoảng trắng").showAndWait();
+            return;
+        }
+
+        String phone = phoneField.getText().trim();
+        if (!phone.isEmpty()
+                && !(PHONE_PATTERN_11_DIGITS.matcher(phone).matches()
+                || PHONE_PATTERN_PLUS84.matcher(phone).matches())) {
+            new Alert(Alert.AlertType.WARNING, "Số điện thoại phải có 11 chữ số hoặc bắt đầu bằng +84").showAndWait();
+            return;
+        }
+
+        String email = emailField.getText().trim();
+        if (!email.isEmpty() && !EMAIL_PATTERN.matcher(email).matches()) {
+            new Alert(Alert.AlertType.WARNING, "Email phải kết thúc bằng @gmail.com").showAndWait();
             return;
         }
 
